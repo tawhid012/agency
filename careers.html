@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX Careers | Join the Vanguard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: #000000 !important; color: white; }
+  .noise-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+  .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+  .text-glow { text-shadow: 0 0 40px rgba(255,255,255,0.3); }
+  .job-row:hover { background: rgba(255,255,255,0.04); }
+</style>
+</head>
+<body class="selection:bg-white/30 text-white overflow-x-hidden">
+<div class="noise-bg"></div>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass-panel pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="labs.html">Vision</a>
+    </nav>
+    <button class="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Apply Now</button>
+  </header>
+</div>
+
+<main>
+  <!-- Hero -->
+  <section class="relative min-h-[80vh] flex flex-col items-center justify-center pt-40 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-white/5 blur-[150px] rounded-full -z-10"></div>
+    <div class="relative z-10 max-w-5xl">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-8 block">Careers at Limux</span>
+      <h1 class="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-6 leading-[1.05] text-glow">
+        Build your <br/>best work here.
+      </h1>
+      <p class="text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+        Join a team of obsessive builders, designers, and engineers who are shaping the next layer of the internet. We hire for craft, curiosity, and character.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition-transform">See Open Roles</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Our principles.</h2>
+      <p class="text-white/60 font-light text-lg">The beliefs that guide how we work.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-panel rounded-[32px] p-10">
+        <h3 class="text-2xl font-semibold text-white mb-3">Craft</h3>
+        <p class="text-white/50 font-light leading-relaxed">We care deeply about how things are built, not just what gets shipped. Every detail matters.</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-10">
+        <h3 class="text-2xl font-semibold text-white mb-3">Ownership</h3>
+        <p class="text-white/50 font-light leading-relaxed">We don't wait to be told what to do. We take initiative, own our outcomes, and move with urgency.</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-10">
+        <h3 class="text-2xl font-semibold text-white mb-3">Community</h3>
+        <p class="text-white/50 font-light leading-relaxed">We build for the ecosystem, not just for ourselves. A rising tide lifts all builders.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Open Roles -->
+  <section class="py-32 px-4 max-w-5xl mx-auto border-b border-white/5">
+    <div class="mb-16">
+      <h2 class="text-4xl font-bold tracking-tight text-white mb-4">Open roles.</h2>
+      <p class="text-white/60 font-light">We're small and focused. Every role here has high impact.</p>
+    </div>
+    <div class="divide-y divide-white/10">
+      <div class="job-row flex justify-between items-center py-8 px-4 rounded-2xl cursor-pointer transition-colors group">
+        <div>
+          <h3 class="text-lg font-semibold text-white group-hover:text-white/80 transition-colors">Lead Frontend Engineer</h3>
+          <p class="text-white/50 text-sm mt-1">Full-time · Remote</p>
+        </div>
+        <span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">arrow_forward</span>
+      </div>
+      <div class="job-row flex justify-between items-center py-8 px-4 rounded-2xl cursor-pointer transition-colors group">
+        <div>
+          <h3 class="text-lg font-semibold text-white group-hover:text-white/80 transition-colors">Product Designer</h3>
+          <p class="text-white/50 text-sm mt-1">Full-time · Remote</p>
+        </div>
+        <span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">arrow_forward</span>
+      </div>
+      <div class="job-row flex justify-between items-center py-8 px-4 rounded-2xl cursor-pointer transition-colors group">
+        <div>
+          <h3 class="text-lg font-semibold text-white group-hover:text-white/80 transition-colors">Academy Curriculum Lead</h3>
+          <p class="text-white/50 text-sm mt-1">Part-time · Remote</p>
+        </div>
+        <span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">arrow_forward</span>
+      </div>
+      <div class="job-row flex justify-between items-center py-8 px-4 rounded-2xl cursor-pointer transition-colors group">
+        <div>
+          <h3 class="text-lg font-semibold text-white group-hover:text-white/80 transition-colors">Community Manager</h3>
+          <p class="text-white/50 text-sm mt-1">Full-time · Remote</p>
+        </div>
+        <span class="material-symbols-outlined text-white/30 group-hover:text-white transition-colors">arrow_forward</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-40 px-4 text-center relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full -z-10"></div>
+    <div class="max-w-3xl mx-auto relative z-10">
+      <h2 class="text-4xl md:text-6xl font-bold text-white tracking-tight mb-6">Don't see your role?</h2>
+      <p class="text-white/60 font-light text-lg mb-10">We're always interested in exceptional people. Send us your story.</p>
+      <a href="contact.html" class="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform inline-block">Get in Touch</a>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 pt-20 pb-10 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-16">
+    <div class="col-span-2"><a href="index.html" class="font-bold tracking-tight text-white text-3xl mb-4 block">LIMUX</a><p class="text-white/40 font-light text-sm max-w-xs mb-8 leading-relaxed">An ecosystem designed for the next generation of engineers, designers, and creators.</p></div>
+    <div><ul class="space-y-4"><li><a href="agency.html" class="text-sm text-white/60 hover:text-white transition-colors">Agency</a></li><li><a href="academy.html" class="text-sm text-white/60 hover:text-white transition-colors">Academy</a></li><li><a href="labs.html" class="text-sm text-white/60 hover:text-white transition-colors">Labs</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="index.html" class="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a></li><li><a href="careers.html" class="text-sm text-white/60 hover:text-white transition-colors">Careers</a></li><li><a href="portfolio.html" class="text-sm text-white/60 hover:text-white transition-colors">Projects</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="contact.html" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li><li><a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Privacy</a></li></ul></div>
+  </div>
+  <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex justify-between items-center">
+    <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

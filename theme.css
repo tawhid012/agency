@@ -1,0 +1,134 @@
+:root {
+  /* Backgrounds */
+  --bg-primary: #030303;
+  --bg-secondary: #070707;
+  --bg-tertiary: #0B0B0B;
+  --bg-elevated: #111111;
+
+  /* Glass */
+  --glass-bg: rgba(255,255,255,0.04);
+  --glass-bg-hover: rgba(255,255,255,0.06);
+  --glass-border: rgba(255,255,255,0.08);
+
+  /* Text */
+  --text-primary: #FAFAFA;
+  --text-secondary: #D4D4D8;
+  --text-muted: #71717A;
+
+  /* Brand */
+  --accent-purple: #8B5CF6;
+  --accent-blue: #3B82F6;
+  --accent-cyan: #22D3EE;
+
+  /* Glow */
+  --glow-purple: rgba(139,92,246,.45);
+  --glow-blue: rgba(59,130,246,.35);
+}
+
+body {
+  background: radial-gradient(circle at top right, rgba(139,92,246,.18), transparent 35%),
+              radial-gradient(circle at bottom left, rgba(59,130,246,.10), transparent 35%),
+              #030303;
+  color: var(--text-primary);
+  background-attachment: fixed;
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.35);
+  transition: background 0.3s ease;
+}
+
+.glass-card:hover {
+  background: var(--glass-bg-hover);
+}
+
+.glass-border {
+  border: 1px solid var(--glass-border);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+  border: none;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px var(--glow-purple);
+}
+
+.hero-glow {
+  background: radial-gradient(circle, var(--glow-purple), transparent 70%);
+}
+
+.section-shader {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.24;
+}
+
+.section-shader canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Custom Cursor & Spotlight (Universal) */
+@media (pointer: fine) {
+  body {
+    cursor: none !important;
+  }
+  a, button, [role="button"], input, select, textarea, .cursor-pointer {
+    cursor: none !important;
+  }
+  
+  .cursor-dot {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+  }
+  
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
+  }
+  
+  .cursor-ring.hover {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+  
+  .spotlight {
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
+    background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s linear;
+  }
+}

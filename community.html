@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX Community | Builders United</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: #000000 !important; color: white; }
+  .noise-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+  .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+  .text-glow { text-shadow: 0 0 40px rgba(255,255,255,0.3); }
+  .animated-border { position: relative; }
+  .animated-border::before { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity 0.5s ease; }
+  .animated-border:hover::before { opacity: 1; }
+</style>
+</head>
+<body class="selection:bg-white/30 text-white overflow-x-hidden">
+<div class="noise-bg"></div>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass-panel pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="labs.html">Vision</a>
+    </nav>
+    <button class="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Join Community</button>
+  </header>
+</div>
+
+<main>
+  <!-- Hero -->
+  <section class="relative min-h-[80vh] flex flex-col items-center justify-center pt-40 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-white/5 blur-[150px] rounded-full -z-10"></div>
+    <div class="relative z-10 max-w-5xl">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-8 block">Limux Community</span>
+      <h1 class="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-6 leading-[1.05] text-glow">
+        Build in public. <br/>Grow together.
+      </h1>
+      <p class="text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed font-light">
+        10,000+ builders from 42 countries shipping together, sharing knowledge, and raising the bar for what's possible on the web.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button class="bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition-transform">Join the Discord</button>
+        <button class="glass-panel px-8 py-4 rounded-full font-medium text-white hover:bg-white/10 transition-colors">Browse Projects</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="py-20 border-b border-white/10">
+    <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-12 text-center">
+      <div><div class="text-4xl font-bold mb-2">10k+</div><div class="text-white/50 text-sm uppercase tracking-widest font-semibold">Builders</div></div>
+      <div><div class="text-4xl font-bold mb-2">450+</div><div class="text-white/50 text-sm uppercase tracking-widest font-semibold">Projects Shipped</div></div>
+      <div><div class="text-4xl font-bold mb-2">42</div><div class="text-white/50 text-sm uppercase tracking-widest font-semibold">Countries</div></div>
+      <div><div class="text-4xl font-bold mb-2">Daily</div><div class="text-white/50 text-sm uppercase tracking-widest font-semibold">Activity</div></div>
+    </div>
+  </section>
+
+  <!-- Community Features -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">What you get when you join.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-panel rounded-[32px] p-10 animated-border">
+        <span class="material-symbols-outlined text-4xl text-white/30 mb-6 block">forum</span>
+        <h3 class="text-2xl font-semibold text-white mb-3">Discord Channels</h3>
+        <p class="text-white/50 font-light leading-relaxed">Dedicated channels for every stack, skill level, and domain. Ask questions, get answers in minutes.</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-10 animated-border">
+        <span class="material-symbols-outlined text-4xl text-white/30 mb-6 block">code</span>
+        <h3 class="text-2xl font-semibold text-white mb-3">Weekly Build Challenges</h3>
+        <p class="text-white/50 font-light leading-relaxed">Ship something every week alongside the community. Peer review, feedback, and recognition.</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-10 animated-border">
+        <span class="material-symbols-outlined text-4xl text-white/30 mb-6 block">group</span>
+        <h3 class="text-2xl font-semibold text-white mb-3">Mentorship</h3>
+        <p class="text-white/50 font-light leading-relaxed">Get matched with senior builders who've been where you are and can accelerate your path.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Members -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <h2 class="text-3xl font-bold text-white mb-12">Featured builders.</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass-panel rounded-[32px] p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl font-bold">A</div>
+          <div><div class="font-semibold text-white">Alex Chen</div><div class="text-white/50 text-sm">Full-Stack, AI</div></div>
+        </div>
+        <p class="text-white/50 font-light text-sm leading-relaxed">"Limux Community helped me ship my first SaaS in 3 weeks. The feedback was invaluable."</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl font-bold">M</div>
+          <div><div class="font-semibold text-white">Maria Santos</div><div class="text-white/50 text-sm">Designer, Frontend</div></div>
+        </div>
+        <p class="text-white/50 font-light text-sm leading-relaxed">"The weekly challenges pushed me further than any tutorial ever could. I level up every week."</p>
+      </div>
+      <div class="glass-panel rounded-[32px] p-8">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-xl font-bold">K</div>
+          <div><div class="font-semibold text-white">Kai Nakamura</div><div class="text-white/50 text-sm">Backend, DevOps</div></div>
+        </div>
+        <p class="text-white/50 font-light text-sm leading-relaxed">"Found my co-founder in the Limux Discord. We're building something big together now."</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="py-40 px-4 text-center relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full -z-10"></div>
+    <div class="max-w-3xl mx-auto relative z-10">
+      <h2 class="text-4xl md:text-6xl font-bold text-white tracking-tight mb-6">Your people are waiting.</h2>
+      <p class="text-white/60 font-light text-lg mb-10">Join 10,000+ builders who are learning, shipping, and growing together.</p>
+      <button class="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform">Join the Community</button>
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 pt-20 pb-10 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-16">
+    <div class="col-span-2"><a href="index.html" class="font-bold tracking-tight text-white text-3xl mb-4 block">LIMUX</a><p class="text-white/40 font-light text-sm max-w-xs mb-8 leading-relaxed">An ecosystem designed for the next generation of engineers, designers, and creators.</p></div>
+    <div><ul class="space-y-4"><li><a href="agency.html" class="text-sm text-white/60 hover:text-white transition-colors">Agency</a></li><li><a href="academy.html" class="text-sm text-white/60 hover:text-white transition-colors">Academy</a></li><li><a href="labs.html" class="text-sm text-white/60 hover:text-white transition-colors">Labs</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="index.html" class="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a></li><li><a href="careers.html" class="text-sm text-white/60 hover:text-white transition-colors">Careers</a></li><li><a href="portfolio.html" class="text-sm text-white/60 hover:text-white transition-colors">Projects</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="contact.html" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li><li><a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Privacy</a></li></ul></div>
+  </div>
+  <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex justify-between items-center">
+    <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

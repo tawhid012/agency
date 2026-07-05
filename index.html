@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX | The Ecosystem for Builders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  body { 
+    font-family: 'Inter', sans-serif; 
+    background: #000000 !important; 
+    color: white;
+  }
+  
+  /* Noise Texture Overlay */
+  .noise-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+
+  /* Glass Effects */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  /* Text Glow */
+  .text-glow {
+    text-shadow: 0 0 40px rgba(255,255,255,0.3);
+  }
+
+  .section-shader {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.28;
+  }
+  .section-shader canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 90px 90px;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
+    opacity: 0.16;
+    pointer-events: none;
+  }
+
+  .hero-orb {
+    position: absolute;
+    inset: -18% 10% auto 10%;
+    height: 72%;
+    background: radial-gradient(circle, rgba(255,255,255,0.20), rgba(255,255,255,0.04) 38%, transparent 72%);
+    filter: blur(80px);
+    opacity: 0.75;
+    pointer-events: none;
+    animation: heroPulse 10s ease-in-out infinite alternate;
+  }
+
+  .hero-card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 20px 60px rgba(0,0,0,0.28);
+  }
+
+  @keyframes heroPulse {
+    from { transform: translateY(0px) scale(1); }
+    to { transform: translateY(-20px) scale(1.04); }
+  }
+
+  /* Manifesto Scroll Reveal */
+  .manifesto-line {
+    opacity: 0.2;
+    transition: opacity 0.5s ease;
+  }
+  .manifesto-line.active {
+    opacity: 1;
+  }
+
+  /* Animated Border */
+  .animated-border {
+    position: relative;
+  }
+  .animated-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .animated-border:hover::before {
+    opacity: 1;
+  }
+</style>
+</head>
+<body class="selection:bg-white/30 text-white overflow-x-hidden">
+<div class="noise-bg"></div>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass-panel pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="labs.html">Vision</a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <button class="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Become a Builder</button>
+    </div>
+  </header>
+</div>
+
+<main>
+  <!-- 1. HERO SECTION -->
+  <section class="relative min-h-screen flex flex-col items-center justify-center pt-32 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="hero-grid"></div>
+    <div class="hero-orb"></div>
+    <div class="absolute inset-0 w-full h-full opacity-60 pointer-events-none" style="display:block;">
+      <canvas id="shader-canvas" data-shader="orb" style="display:block;width:100%;height:100%"></canvas>
+    </div>
+    <div class="relative z-10 w-full max-w-6xl mx-auto animate-fade-in-up mt-10">
+      <div class="inline-flex items-center gap-2 hero-card rounded-full px-4 py-2 mb-8 border border-white/10">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span class="text-[10px] sm:text-xs font-medium uppercase tracking-[0.28em] text-white/60">Premium digital products • built in public</span>
+      </div>
+      <h1 class="text-6xl md:text-8xl font-bold text-white tracking-tighter mb-6 max-w-5xl mx-auto leading-[1.02] text-glow">
+        Where builders <br/>
+        forget the future.
+      </h1>
+      <p class="text-xl md:text-2xl text-white/60 max-w-3xl mx-auto mb-10 leading-relaxed font-light">
+        More than an agency. An ecosystem of products, open-source projects, and elite engineers building the next generation of software.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto mb-12">
+        <button class="bg-white text-black px-8 py-4 rounded-full font-semibold shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:scale-105 transition-transform w-full sm:w-auto text-lg">
+          Join the Ecosystem
+        </button>
+        <a href="#manifesto-section" class="hero-card border border-white/10 px-8 py-4 rounded-full font-medium text-white hover:bg-white/10 transition-colors w-full sm:w-auto text-lg">
+          Explore capabilities
+        </a>
+      </div>
+      <div class="flex flex-wrap justify-center gap-4">
+        <div class="hero-card rounded-[22px] px-5 py-4 min-w-[180px] text-left">
+          <div class="text-2xl font-semibold text-white">100+</div>
+          <div class="text-sm text-white/45">Shipped products</div>
+        </div>
+        <div class="hero-card rounded-[22px] px-5 py-4 min-w-[180px] text-left">
+          <div class="text-2xl font-semibold text-white">4 pillars</div>
+          <div class="text-sm text-white/45">Agency • Labs • Academy • Community</div>
+        </div>
+        <div class="hero-card rounded-[22px] px-5 py-4 min-w-[180px] text-left">
+          <div class="text-2xl font-semibold text-white">24/7</div>
+          <div class="text-sm text-white/45">Execution support</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Trust Logos -->
+    <div class="absolute bottom-12 w-full max-w-5xl px-4 flex flex-col items-center">
+      <p class="text-xs text-white/40 uppercase tracking-widest font-semibold mb-6">Trusted by innovative teams</p>
+      <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-40 grayscale">
+        <span class="text-xl font-bold tracking-tighter">ACME</span>
+        <span class="text-xl font-light tracking-widest">NEXUS</span>
+        <span class="text-xl font-black italic">VANGUARD</span>
+        <span class="text-xl font-serif">Aether</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ECOSYSTEM OVERVIEW -->
+  <section class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 blur-[120px] rounded-full -z-10"></div>
+    <div class="max-w-7xl mx-auto text-center">
+      <h2 class="text-sm font-semibold tracking-widest uppercase text-white/40 mb-20">The Limux Architecture</h2>
+      
+      <div class="relative max-w-4xl mx-auto py-20 flex flex-col items-center">
+        <!-- Center Node -->
+        <div class="w-32 h-32 rounded-full glass-panel flex items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 shadow-[0_0_60px_rgba(255,255,255,0.1)] group hover:bg-white/10 transition-colors">
+          <span class="font-bold text-2xl tracking-tighter">LIMUX</span>
+        </div>
+        
+        <!-- SVG Connecting Lines -->
+        <svg class="absolute inset-0 w-full h-full -z-10 opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="50%" y1="50%" x2="20%" y2="20%" stroke="white" stroke-width="1" stroke-dasharray="4 4" />
+          <line x1="50%" y1="50%" x2="80%" y2="20%" stroke="white" stroke-width="1" stroke-dasharray="4 4" />
+          <line x1="50%" y1="50%" x2="20%" y2="80%" stroke="white" stroke-width="1" stroke-dasharray="4 4" />
+          <line x1="50%" y1="50%" x2="80%" y2="80%" stroke="white" stroke-width="1" stroke-dasharray="4 4" />
+        </svg>
+
+        <!-- Orbiting Nodes -->
+        <div class="w-full flex justify-between px-10 mb-40">
+           <div class="glass-panel px-6 py-3 rounded-full text-sm font-medium hover:-translate-y-1 transition-transform cursor-pointer">Agency</div>
+           <div class="glass-panel px-6 py-3 rounded-full text-sm font-medium hover:-translate-y-1 transition-transform cursor-pointer">Academy</div>
+        </div>
+        <div class="w-full flex justify-between px-20">
+           <div class="glass-panel px-6 py-3 rounded-full text-sm font-medium hover:-translate-y-1 transition-transform cursor-pointer">Labs</div>
+           <div class="glass-panel px-6 py-3 rounded-full text-sm font-medium hover:-translate-y-1 transition-transform cursor-pointer">Community</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. EVERYTHING UNDER ONE ROOF (Bento Grid) -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="mb-20 text-center max-w-3xl mx-auto relative z-10">
+      <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">Everything under one roof.</h2>
+      <p class="text-white/60 text-xl font-light">Stop fragmenting your workflow. Design, build, learn, and launch within a unified ecosystem.</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      
+      <!-- Agency -->
+      <div class="glass-panel rounded-[32px] p-8 md:col-span-2 group animated-border flex flex-col justify-between min-h-[300px]">
+        <div>
+          <h3 class="text-2xl font-semibold text-white mb-2">Web Agency</h3>
+          <p class="text-white/50 font-light">Client services for elite brands.</p>
+        </div>
+        <div class="flex justify-end mt-8">
+           <span class="material-symbols-outlined text-white/20 text-6xl group-hover:text-white/40 transition-colors">language</span>
+        </div>
+      </div>
+
+      <!-- AI Products -->
+      <div class="glass-panel rounded-[32px] p-8 md:col-span-2 group animated-border flex flex-col justify-between min-h-[300px]">
+        <div>
+          <h3 class="text-2xl font-semibold text-white mb-2">AI Products</h3>
+          <p class="text-white/50 font-light">In-house tooling and SaaS.</p>
+        </div>
+        <div class="flex justify-end mt-8">
+           <span class="material-symbols-outlined text-white/20 text-6xl group-hover:text-white/40 transition-colors">memory</span>
+        </div>
+      </div>
+
+      <!-- Academy -->
+      <div class="glass-panel rounded-[32px] p-8 md:col-span-1 group animated-border min-h-[250px] flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-2">Academy</h3>
+          <p class="text-white/50 font-light text-sm">Level up your skills.</p>
+        </div>
+      </div>
+
+      <!-- Community -->
+      <div class="glass-panel rounded-[32px] p-8 md:col-span-1 group animated-border min-h-[250px] flex flex-col justify-between">
+        <div>
+          <h3 class="text-xl font-semibold text-white mb-2">Community</h3>
+          <p class="text-white/50 font-light text-sm">Join 10k+ builders.</p>
+        </div>
+      </div>
+
+      <!-- Open Source -->
+      <div class="glass-panel rounded-[32px] p-8 md:col-span-2 group animated-border min-h-[250px] flex flex-col justify-between overflow-hidden relative">
+        <div class="relative z-10">
+          <h3 class="text-xl font-semibold text-white mb-2">Open Source Projects</h3>
+          <p class="text-white/50 font-light text-sm">Giving back to the foundation.</p>
+        </div>
+        <div class="absolute bottom-0 right-0 w-full font-mono text-[10px] text-white/10 p-6 whitespace-pre opacity-50 group-hover:opacity-100 transition-opacity">
+import { Ecosystem } from '@limux/core'
+
+export default function Foundation() {
+  return &lt;Ecosystem open={true} /&gt;
+}
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 4. FEATURED PRODUCTS & PROJECTS -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-8 relative z-10">
+      <div>
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Built by Limux.</h2>
+        <p class="text-white/60 text-lg font-light max-w-lg">From client landmarks to our own internal software suite.</p>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <!-- Project 1 -->
+      <div class="glass-panel rounded-[32px] overflow-hidden group cursor-pointer border border-white/5 hover:border-white/20 transition-colors aspect-[4/3] flex flex-col justify-between p-8 relative">
+         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
+         <!-- Image placeholder representing a sleek dashboard -->
+         <div class="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-700 bg-[url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
+         <div class="relative z-20 flex justify-between items-start">
+            <span class="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold tracking-widest uppercase">Client Project</span>
+            <span class="text-white/40 text-sm">2026</span>
+         </div>
+         <div class="relative z-20">
+            <h3 class="text-3xl font-bold mb-2">Modern Dashboard</h3>
+            <div class="flex items-center gap-2 text-white/60 text-sm group-hover:text-white transition-colors">
+              View Case Study <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </div>
+         </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="glass-panel rounded-[32px] overflow-hidden group cursor-pointer border border-white/5 hover:border-white/20 transition-colors aspect-[4/3] flex flex-col justify-between p-8 relative">
+         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent z-10"></div>
+         <div class="absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity duration-700 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
+         <div class="relative z-20 flex justify-between items-start">
+            <span class="px-3 py-1 rounded-full bg-white/10 text-xs font-semibold tracking-widest uppercase">Internal Tool</span>
+            <span class="text-green-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> Beta</span>
+         </div>
+         <div class="relative z-20">
+            <h3 class="text-3xl font-bold mb-2">Limux AI</h3>
+            <div class="flex items-center gap-2 text-white/60 text-sm group-hover:text-white transition-colors">
+              Request Access <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </div>
+         </div>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+       <!-- Product List -->
+       <div class="glass-panel rounded-[32px] p-8 flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-colors">
+          <div>
+            <h4 class="text-xl font-bold mb-1">Limux Studio</h4>
+            <p class="text-white/40 text-sm">Visual IDE for the web.</p>
+          </div>
+          <span class="px-3 py-1 rounded-full border border-white/10 text-white/40 text-xs font-medium uppercase tracking-widest">Coming Soon</span>
+       </div>
+       <div class="glass-panel rounded-[32px] p-8 flex items-center justify-between group cursor-pointer hover:bg-white/5 transition-colors">
+          <div>
+            <h4 class="text-xl font-bold mb-1">Limux CMS</h4>
+            <p class="text-white/40 text-sm">Headless content architecture.</p>
+          </div>
+          <span class="px-3 py-1 rounded-full border border-white/10 text-white/40 text-xs font-medium uppercase tracking-widest">Coming Soon</span>
+       </div>
+    </div>
+  </section>
+
+  <!-- 5. THE BUILDER MANIFESTO -->
+  <section class="py-40 px-4 max-w-5xl mx-auto border-b border-white/5 text-center sm:text-left relative overflow-hidden" id="manifesto-section">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="text-[40px] md:text-[80px] font-bold tracking-tighter leading-[1.1] relative z-10">
+      <div class="manifesto-line mb-4">We don't chase trends.</div>
+      <div class="manifesto-line mb-4">We build what lasts.</div>
+      <div class="manifesto-line mb-4">We learn.</div>
+      <div class="manifesto-line mb-4">We ship.</div>
+      <div class="manifesto-line text-white">We improve.</div>
+    </div>
+  </section>
+
+  <!-- 6. COMMUNITY & OPEN SOURCE METRICS -->
+  <section class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 relative z-10">
+      
+      <!-- Open Source -->
+      <div>
+        <h3 class="text-sm font-semibold tracking-widest uppercase text-white/40 mb-12">Open Source Foundation</h3>
+        <div class="space-y-12">
+           <div>
+             <div class="text-5xl font-bold mb-2">20+</div>
+             <div class="text-white/50 text-lg font-light">Repositories maintained</div>
+           </div>
+           <div>
+             <div class="text-5xl font-bold mb-2">400+</div>
+             <div class="text-white/50 text-lg font-light">Weekly commits</div>
+           </div>
+           <div>
+             <div class="text-5xl font-bold mb-2">1.2k+</div>
+             <div class="text-white/50 text-lg font-light">Daily downloads</div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Community -->
+      <div>
+        <h3 class="text-sm font-semibold tracking-widest uppercase text-white/40 mb-12">Global Community</h3>
+        <div class="grid grid-cols-2 gap-12">
+           <div>
+             <div class="text-5xl font-bold mb-2">10k</div>
+             <div class="text-white/50 text-lg font-light">Builders</div>
+           </div>
+           <div>
+             <div class="text-5xl font-bold mb-2">450</div>
+             <div class="text-white/50 text-lg font-light">Projects</div>
+           </div>
+           <div>
+             <div class="text-5xl font-bold mb-2">42</div>
+             <div class="text-white/50 text-lg font-light">Countries</div>
+           </div>
+           <div>
+             <div class="text-5xl font-bold mb-2">50k</div>
+             <div class="text-white/50 text-lg font-light">Hours Learned</div>
+           </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 7. WHY LIMUX (Comparison Table) -->
+  <section class="py-32 px-4 max-w-4xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="text-center mb-16 relative z-10">
+      <h2 class="text-4xl font-bold tracking-tight mb-4">Why Limux Exists</h2>
+      <p class="text-white/60 font-light text-lg">We refused to accept the standard agency model.</p>
+    </div>
+    
+    <div class="glass-panel rounded-[32px] overflow-hidden">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-white/10">
+            <th class="p-8 text-white/40 font-medium w-1/2 text-lg">The Industry Standard</th>
+            <th class="p-8 text-white font-bold w-1/2 text-lg border-l border-white/10">The Limux Ecosystem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-white/5">
+            <td class="p-8 text-white/50">Traditional Agency</td>
+            <td class="p-8 text-white font-medium border-l border-white/10">Integrated Ecosystem</td>
+          </tr>
+          <tr class="border-b border-white/5">
+            <td class="p-8 text-white/50">Client Work Only</td>
+            <td class="p-8 text-white font-medium border-l border-white/10">Products + Community + Client Work</td>
+          </tr>
+          <tr class="border-b border-white/5">
+            <td class="p-8 text-white/50">Using Templates</td>
+            <td class="p-8 text-white font-medium border-l border-white/10">Core Engineering from Scratch</td>
+          </tr>
+          <tr>
+            <td class="p-8 text-white/50">Short Term Deliverables</td>
+            <td class="p-8 text-white font-medium border-l border-white/10">Long Term Partnerships</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 8. JOIN THE MOVEMENT CTA -->
+  <section class="py-40 px-4 relative overflow-hidden text-center">
+    <!-- Subtle glow behind CTA -->
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-5xl md:text-7xl font-bold text-white tracking-tight mb-16">Join the Movement</h2>
+      
+      <!-- Pipeline Visual -->
+      <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 mb-16 text-white/60 font-medium tracking-widest uppercase text-sm">
+         <span>Become a Builder</span>
+         <span class="material-symbols-outlined text-white/20 hidden md:block">arrow_forward</span>
+         <span class="material-symbols-outlined text-white/20 block md:hidden">arrow_downward</span>
+         <span>Join Discord</span>
+         <span class="material-symbols-outlined text-white/20 hidden md:block">arrow_forward</span>
+         <span class="material-symbols-outlined text-white/20 block md:hidden">arrow_downward</span>
+         <span class="text-white font-bold">Build the Future</span>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-6 justify-center w-full sm:w-auto">
+        <button class="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+          Join the Ecosystem
+        </button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- 10. HUGE FOOTER -->
+<footer class="border-t border-white/10 pt-32 pb-12 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto">
+    
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-24">
+      <div class="col-span-2 md:col-span-2">
+        <a href="index.html" class="font-bold tracking-tight text-white text-4xl mb-6 block">LIMUX</a>
+        <p class="text-white/40 font-light text-base max-w-sm mb-8 leading-relaxed">
+          An ecosystem designed for the next generation of engineers, designers, and creators. We build what lasts.
+        </p>
+      </div>
+      
+      <div>
+        <ul class="space-y-6">
+          <li><a href="agency.html" class="text-base text-white/60 hover:text-white transition-colors">Agency</a></li>
+          <li><a href="academy.html" class="text-base text-white/60 hover:text-white transition-colors">Academy</a></li>
+          <li><a href="labs.html" class="text-base text-white/60 hover:text-white transition-colors">Labs</a></li>
+          <li><a href="community.html" class="text-base text-white/60 hover:text-white transition-colors">Community</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <ul class="space-y-6">
+          <li><a href="#" class="text-base text-white/60 hover:text-white transition-colors">Resources</a></li>
+          <li><a href="careers.html" class="text-base text-white/60 hover:text-white transition-colors">Careers</a></li>
+          <li><a href="#" class="text-base text-white/60 hover:text-white transition-colors">Blog</a></li>
+          <li><a href="#manifesto-section" class="text-base text-white/60 hover:text-white transition-colors">Manifesto</a></li>
+        </ul>
+      </div>
+      
+      <div>
+        <ul class="space-y-6">
+          <li><a href="#" class="text-base text-white/60 hover:text-white transition-colors">Legal</a></li>
+          <li><a href="#" class="text-base text-white/60 hover:text-white transition-colors">Privacy</a></li>
+          <li><a href="#" class="text-base text-white/60 hover:text-white transition-colors">Terms</a></li>
+          <li><a href="contact.html" class="text-base text-white/60 hover:text-white transition-colors">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+      <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+      <div class="flex gap-4">
+        <span class="w-10 h-10 rounded-full glass-panel flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined text-sm text-white">public</span>
+        </span>
+        <span class="w-10 h-10 rounded-full glass-panel flex items-center justify-center cursor-pointer hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined text-sm text-white">forum</span>
+        </span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Manifesto Scroll Reveal Logic
+  const manifestoObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('.manifesto-line').forEach((line, index) => {
+    line.style.transitionDelay = `${index * 150}ms`;
+    manifestoObserver.observe(line);
+  });
+</script>
+</body>
+</html>

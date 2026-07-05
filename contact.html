@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX | Contact</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  body { font-family: 'Inter', sans-serif; background: #000000 !important; color: white; }
+  .noise-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+  .glass-panel { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+  .text-glow { text-shadow: 0 0 40px rgba(255,255,255,0.3); }
+  input, textarea, select {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    color: white;
+    padding: 14px 18px;
+    width: 100%;
+    transition: border-color 0.2s ease;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.3); }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); }
+  select option { background: #111; color: white; }
+</style>
+</head>
+<body class="selection:bg-white/30 text-white overflow-x-hidden">
+<div class="noise-bg"></div>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass-panel pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="labs.html">Vision</a>
+    </nav>
+    <button class="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Become a Builder</button>
+  </header>
+</div>
+
+<main>
+  <!-- Header -->
+  <section class="relative min-h-[50vh] flex flex-col items-center justify-center pt-40 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-white/5 blur-[120px] rounded-full -z-10"></div>
+    <div class="relative z-10 max-w-3xl">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-8 block">Get in Touch</span>
+      <h1 class="text-5xl md:text-7xl font-bold text-white tracking-tighter mb-6 leading-[1.05] text-glow">
+        Let's talk.
+      </h1>
+      <p class="text-xl text-white/60 leading-relaxed font-light">
+        Whether you have a project in mind, a question about the ecosystem, or just want to say hello — we'd love to hear from you.
+      </p>
+    </div>
+  </section>
+
+  <!-- Contact Layout -->
+  <section class="py-32 px-4 max-w-7xl mx-auto">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-start">
+      
+      <!-- Left: Form -->
+      <div>
+        <h2 class="text-2xl font-bold text-white mb-10">Send us a message.</h2>
+        <form class="space-y-6">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-2 block">First Name</label>
+              <input type="text" placeholder="John"/>
+            </div>
+            <div>
+              <label class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-2 block">Last Name</label>
+              <input type="text" placeholder="Doe"/>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-2 block">Email</label>
+            <input type="email" placeholder="hello@example.com"/>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-2 block">Subject</label>
+            <select>
+              <option>Start a Project</option>
+              <option>Join the Team</option>
+              <option>Academy Inquiry</option>
+              <option>Community</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-white/40 uppercase tracking-widest mb-2 block">Message</label>
+            <textarea rows="5" placeholder="Tell us what you're building..."></textarea>
+          </div>
+          <button type="submit" class="bg-white text-black px-8 py-4 rounded-full font-semibold hover:scale-105 transition-transform w-full">Send Message</button>
+        </form>
+      </div>
+
+      <!-- Right: Info -->
+      <div class="space-y-12">
+        <div>
+          <h2 class="text-2xl font-bold text-white mb-8">Connect directly.</h2>
+          <div class="space-y-6">
+            <div class="glass-panel rounded-[24px] p-6 flex items-center gap-4">
+              <span class="material-symbols-outlined text-white/40">alternate_email</span>
+              <div>
+                <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mb-1">Email</div>
+                <a href="mailto:hello@limux.dev" class="text-white hover:text-white/80 transition-colors font-medium">hello@limux.dev</a>
+              </div>
+            </div>
+            <div class="glass-panel rounded-[24px] p-6 flex items-center gap-4">
+              <span class="material-symbols-outlined text-white/40">forum</span>
+              <div>
+                <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mb-1">Discord</div>
+                <a href="community.html" class="text-white hover:text-white/80 transition-colors font-medium">Join the Community Server</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-lg font-semibold text-white mb-6">Frequently asked.</h3>
+          <div class="space-y-4">
+            <div class="border-b border-white/10 pb-4">
+              <h4 class="font-medium text-white mb-2">How quickly do you respond?</h4>
+              <p class="text-white/50 font-light text-sm">We typically respond to all inquiries within 24 hours on business days.</p>
+            </div>
+            <div class="border-b border-white/10 pb-4">
+              <h4 class="font-medium text-white mb-2">What's your project minimum?</h4>
+              <p class="text-white/50 font-light text-sm">Project budgets vary. Contact us to discuss your specific needs and we'll work something out.</p>
+            </div>
+            <div>
+              <h4 class="font-medium text-white mb-2">Are you taking on new clients?</h4>
+              <p class="text-white/50 font-light text-sm">We take on a limited number of projects per quarter to ensure quality. Reach out early.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 pt-20 pb-10 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-16">
+    <div class="col-span-2"><a href="index.html" class="font-bold tracking-tight text-white text-3xl mb-4 block">LIMUX</a><p class="text-white/40 font-light text-sm max-w-xs mb-8 leading-relaxed">An ecosystem designed for the next generation of engineers, designers, and creators.</p></div>
+    <div><ul class="space-y-4"><li><a href="agency.html" class="text-sm text-white/60 hover:text-white transition-colors">Agency</a></li><li><a href="academy.html" class="text-sm text-white/60 hover:text-white transition-colors">Academy</a></li><li><a href="labs.html" class="text-sm text-white/60 hover:text-white transition-colors">Labs</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="index.html" class="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a></li><li><a href="careers.html" class="text-sm text-white/60 hover:text-white transition-colors">Careers</a></li><li><a href="portfolio.html" class="text-sm text-white/60 hover:text-white transition-colors">Projects</a></li></ul></div>
+    <div><ul class="space-y-4"><li><a href="contact.html" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li><li><a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Privacy</a></li></ul></div>
+  </div>
+  <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex justify-between items-center">
+    <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+  </div>
+</footer>
+</body>
+</html>

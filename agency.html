@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX Agency | Digital Excellence for Elite Brands</title>
+<meta name="description" content="Limux builds ultra-performant websites, web apps, and AI-powered digital products for brands that refuse to be ordinary."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #000 !important; color: white; }
+
+  /* Noise Overlay */
+  .noise-bg { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999; opacity:0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+
+  /* Glass */
+  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+
+  /* Text Glow */
+  .text-glow { text-shadow: 0 0 60px rgba(255,255,255,0.25); }
+
+  .section-shader { position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: 0.24; }
+  .section-shader canvas { display: block; width: 100%; height: 100%; }
+
+  /* Marquee */
+  .marquee-track { display: flex; gap: 64px; animation: marquee 20s linear infinite; }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* Card Tilt */
+  .tilt-card { transform-style: preserve-3d; transition: transform 0.3s ease; will-change: transform; }
+
+  /* Service Card Hover */
+  .service-card { transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; }
+  .service-card:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 60px rgba(255,255,255,0.05); }
+  .service-card:hover .service-icon { transform: rotate(10deg) scale(1.1); }
+  .service-card:hover .service-cta { opacity: 1; transform: translateX(0); }
+  .service-icon { transition: transform 0.3s ease; display: inline-block; }
+  .service-cta { opacity: 0; transform: translateX(-8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+
+  /* Magnetic Button */
+  .magnetic { transition: transform 0.2s ease; }
+
+
+  /* FAQ Accordion */
+  .faq-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+  .faq-body.open { max-height: 400px; }
+  .faq-chevron { transition: transform 0.3s ease; }
+  .faq-chevron.open { transform: rotate(180deg); }
+
+  /* Counter */
+  .counter-num { transition: all 0.3s; }
+
+  /* Text Reveal */
+  .reveal-line { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal-line.visible { opacity: 1; transform: translateY(0); }
+
+  /* Progress Nav */
+  .progress-nav { position: fixed; top: 50%; right: 28px; transform: translateY(-50%); z-index: 100; display: flex; flex-direction: column; gap: 12px; }
+  .progress-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); transition: all 0.3s ease; cursor: pointer; }
+  .progress-dot.active { background: white; transform: scale(1.5); }
+  .progress-dot span { display: none; }
+
+  /* Animated Border */
+  .anim-border { position: relative; }
+  .anim-border::before { content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.3), transparent 70%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: 0; transition: opacity 0.4s ease; }
+  .anim-border:hover::before { opacity: 1; }
+
+  /* Stack Grid */
+  .stack-item:hover .stack-desc { opacity: 1; transform: translateY(0); }
+  .stack-desc { opacity: 0; transform: translateY(8px); transition: opacity 0.3s ease, transform 0.3s ease; }
+
+  /* Glow on hover */
+  .glow-hover:hover { box-shadow: 0 0 40px rgba(255,255,255,0.08); }
+
+  /* Inside Project check */
+  .check-item { opacity: 0; transform: translateX(-16px); transition: opacity 0.4s ease, transform 0.4s ease; }
+  .check-item.visible { opacity: 1; transform: translateX(0); }
+
+  /* Timeline active line */
+  .timeline-line { height: 0; transition: height 1.5s ease; }
+  .timeline-line.active { height: 100%; }
+
+  @media (max-width: 768px) {
+    .progress-nav { display: none; }
+  }
+</style>
+</head>
+<body class="selection:bg-white/30 overflow-x-hidden">
+
+<!-- Noise -->
+<div class="noise-bg"></div>
+
+<!-- Sticky Progress Nav -->
+<nav class="progress-nav" id="progressNav">
+  <div class="progress-dot active" data-target="hero" title="Hero"></div>
+  <div class="progress-dot" data-target="capabilities" title="Services"></div>
+  <div class="progress-dot" data-target="process" title="Process"></div>
+  <div class="progress-dot" data-target="results" title="Results"></div>
+  <div class="progress-dot" data-target="stack" title="Stack"></div>
+  <div class="progress-dot" data-target="faq" title="FAQ"></div>
+  <div class="progress-dot" data-target="cta" title="Contact"></div>
+</nav>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white transition-colors border-b border-white pb-0.5" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="labs.html">Vision</a>
+    </nav>
+    <button class="magnetic bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Start a Project</button>
+  </header>
+</div>
+
+<main>
+
+  <!-- ═══ 1. HERO ═══ -->
+  <section id="hero" class="relative min-h-screen flex flex-col items-center justify-center pt-36 pb-24 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="absolute inset-0 opacity-50 pointer-events-none">
+      <canvas data-shader="ripple" class="block w-full h-full"></canvas>
+    </div>
+    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-white/5 blur-[150px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="relative z-10 max-w-5xl">
+      <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-10">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        <span class="text-xs font-medium text-white/60 tracking-wide">Available · Next project starts in 2 weeks</span>
+      </div>
+      <h1 class="text-6xl md:text-[88px] font-bold text-white tracking-tighter mb-6 leading-[1.02] text-glow reveal-line">
+        We build digital <br/>excellence.
+      </h1>
+      <p class="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed font-light reveal-line">
+        Not just websites. Digital experiences that convert, retain, and grow your business. Built with precision, shipped on time.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center reveal-line">
+        <button class="magnetic bg-white text-black px-10 py-5 rounded-full font-semibold text-lg hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.2)]">Start Your Project</button>
+        <button class="magnetic glass px-10 py-5 rounded-full font-medium text-white hover:bg-white/10 transition-colors text-lg">Book a Discovery Call</button>
+      </div>
+      <!-- Quick proof -->
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-8 mt-16 text-white/40 text-sm">
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span> No templates, ever</span>
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span> Code you own fully</span>
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">check_circle</span> 30-day post-launch support</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 2. MARQUEE TRUSTED BY ═══ -->
+  <section class="py-14 border-b border-white/5 overflow-hidden">
+    <div class="mb-8 text-center">
+      <p class="text-xs text-white/30 uppercase tracking-widest font-semibold">Trusted by innovative teams worldwide</p>
+    </div>
+    <div class="relative overflow-hidden">
+      <div class="flex">
+        <div class="marquee-track whitespace-nowrap">
+          <span class="text-2xl font-bold text-white/20 tracking-tighter">ACME</span>
+          <span class="text-2xl font-light text-white/20 tracking-widest">NEXUS</span>
+          <span class="text-2xl font-black text-white/20 italic">VANGUARD</span>
+          <span class="text-2xl font-serif text-white/20">Aether</span>
+          <span class="text-2xl font-bold text-white/20 tracking-tight">OMNI</span>
+          <span class="text-2xl font-light text-white/20 tracking-widest uppercase">Vertex</span>
+          <span class="text-2xl font-black text-white/20">DRIFT</span>
+          <span class="text-2xl font-light text-white/20">Crestline</span>
+          <!-- Duplicate for seamless loop -->
+          <span class="text-2xl font-bold text-white/20 tracking-tighter">ACME</span>
+          <span class="text-2xl font-light text-white/20 tracking-widest">NEXUS</span>
+          <span class="text-2xl font-black text-white/20 italic">VANGUARD</span>
+          <span class="text-2xl font-serif text-white/20">Aether</span>
+          <span class="text-2xl font-bold text-white/20 tracking-tight">OMNI</span>
+          <span class="text-2xl font-light text-white/20 tracking-widest uppercase">Vertex</span>
+          <span class="text-2xl font-black text-white/20">DRIFT</span>
+          <span class="text-2xl font-light text-white/20">Crestline</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3. CAPABILITIES ═══ -->
+  <section id="capabilities" class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="mb-20 relative z-10">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Our Capabilities</span>
+      <h2 class="text-4xl md:text-6xl font-bold tracking-tight text-white mb-6">What we build.</h2>
+      <p class="text-white/60 text-xl font-light max-w-2xl">Every service, engineered to the absolute edge of technical possibility.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Web Engineering -->
+      <div class="service-card glass rounded-[32px] p-10 anim-border group cursor-pointer">
+        <div class="flex justify-between items-start mb-8">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl text-white service-icon">language</span>
+          </div>
+          <div class="flex gap-2 flex-wrap justify-end">
+            <span class="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-[10px] uppercase tracking-widest">Next: 2 Weeks</span>
+            <span class="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-[10px] uppercase tracking-widest">~21 Days</span>
+          </div>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Web Engineering</h3>
+        <p class="text-white/50 font-light mb-6 leading-relaxed">Ultra-performant websites and web applications engineered from first principles. We don't touch templates.</p>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Web Apps</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Landing Pages</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Dashboards</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">E-commerce</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Admin Panels</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-white/40 service-cta">Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span></div>
+      </div>
+
+      <!-- Brand Identity -->
+      <div class="service-card glass rounded-[32px] p-10 anim-border group cursor-pointer">
+        <div class="flex justify-between items-start mb-8">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl text-white service-icon">auto_awesome</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-[10px] uppercase tracking-widest">~14 Days</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Brand Identity</h3>
+        <p class="text-white/50 font-light mb-6 leading-relaxed">Visual systems that command attention. From logo design to full brand guidelines that scale.</p>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Logo Design</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Brand System</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Typography</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Guidelines</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-white/40 service-cta">Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span></div>
+      </div>
+
+      <!-- Mobile Apps -->
+      <div class="service-card glass rounded-[32px] p-10 anim-border group cursor-pointer">
+        <div class="flex justify-between items-start mb-8">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl text-white service-icon">smartphone</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-white/5 text-white/40 text-[10px] uppercase tracking-widest">~35 Days</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Mobile Apps</h3>
+        <p class="text-white/50 font-light mb-6 leading-relaxed">Cross-platform apps with native-level performance. iOS and Android from a single, maintainable codebase.</p>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">iOS</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Android</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Cross-Platform</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">React Native</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-white/40 service-cta">Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span></div>
+      </div>
+
+      <!-- AI Integration -->
+      <div class="service-card glass rounded-[32px] p-10 anim-border group cursor-pointer">
+        <div class="flex justify-between items-start mb-8">
+          <div class="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center">
+            <span class="material-symbols-outlined text-2xl text-white service-icon">psychology</span>
+          </div>
+          <span class="px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 text-[10px] uppercase tracking-widest">Available Now</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">AI Integration</h3>
+        <p class="text-white/50 font-light mb-6 leading-relaxed">We embed neural intelligence into your existing workflows. Chatbots, recommenders, content generators — built to actually work.</p>
+        <div class="flex flex-wrap gap-2 mb-8">
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">LLM Integration</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Custom Chatbots</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">Automation</span>
+          <span class="text-xs text-white/40 px-3 py-1 rounded-full bg-white/5">RAG Systems</span>
+        </div>
+        <div class="flex items-center gap-2 text-sm text-white/40 service-cta">Learn more <span class="material-symbols-outlined text-sm">arrow_forward</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ 4. INSIDE EVERY PROJECT ═══ -->
+  <section class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="text-center mb-16">
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Inside every project.</h2>
+        <p class="text-white/60 font-light text-lg">Not just a website. A complete digital product.</p>
+      </div>
+      <div class="glass rounded-[40px] p-12 md:p-16 border border-white/10" id="inside-project">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">UX Research & Strategy</div><div class="text-sm text-white/40 font-light">Understanding your users before writing a line of code</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 60ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Custom UI Design</div><div class="text-sm text-white/40 font-light">Figma-first, pixel-precise, brand-aligned</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 120ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Responsive Development</div><div class="text-sm text-white/40 font-light">Perfect on every screen, from 320px to 4K</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 180ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">SEO Foundation</div><div class="text-sm text-white/40 font-light">Semantic markup, metadata, performance — built in</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 240ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Performance Optimization</div><div class="text-sm text-white/40 font-light">Core Web Vitals 90+ guaranteed</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 300ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Security Best Practices</div><div class="text-sm text-white/40 font-light">SSL, input validation, dependency auditing</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 360ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Analytics Setup</div><div class="text-sm text-white/40 font-light">Track what matters from day one</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 border-b border-white/5" style="transition-delay: 420ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">Full Documentation</div><div class="text-sm text-white/40 font-light">Your team can maintain and extend independently</div></div>
+          </div>
+          <div class="check-item flex items-center gap-4 py-4 md:col-span-2" style="transition-delay: 480ms">
+            <span class="material-symbols-outlined text-white/60 shrink-0">check_circle</span>
+            <div><div class="font-medium text-white">30-Day Post-Launch Support</div><div class="text-sm text-white/40 font-light">We're with you through the critical first month</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 5. PROCESS ═══ -->
+  <section id="process" class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">How We Work</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">From idea to launch.</h2>
+      <p class="text-white/60 font-light text-lg">A proven 6-week process. No surprises, no delays.</p>
+    </div>
+    <!-- Horizontal process cards -->
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">01</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">search</span>
+        <div class="font-semibold text-white text-sm">Discovery</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 1</div>
+      </div>
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">02</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">architecture</span>
+        <div class="font-semibold text-white text-sm">Strategy</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 1</div>
+      </div>
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">03</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">draw</span>
+        <div class="font-semibold text-white text-sm">UI Design</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 2–3</div>
+      </div>
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">04</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">code</span>
+        <div class="font-semibold text-white text-sm">Build</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 3–5</div>
+      </div>
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">05</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">bug_report</span>
+        <div class="font-semibold text-white text-sm">Testing</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 5–6</div>
+      </div>
+      <div class="glass rounded-[24px] p-6 text-center glow-hover group cursor-pointer transition-all hover:bg-white/5 border border-white/10">
+        <div class="text-3xl font-bold text-white/10 mb-4 group-hover:text-white/30 transition-colors">06</div>
+        <span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">rocket_launch</span>
+        <div class="font-semibold text-white text-sm">Launch</div>
+        <div class="text-white/40 text-xs mt-2 font-light">Week 6</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 6. RESULTS ═══ -->
+  <section id="results" class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center mb-20">
+        <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Measurable Impact</span>
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Results that speak.</h2>
+        <p class="text-white/60 font-light text-lg">Not promises. Averages from real client projects.</p>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="glass rounded-[32px] p-10 text-center glow-hover">
+          <div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="220">0</span>%</div>
+          <div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Avg Traffic Increase</div>
+        </div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover">
+          <div class="text-5xl font-bold text-white mb-3">+<span class="counter" data-target="85">0</span>%</div>
+          <div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Conversion Rate</div>
+        </div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover">
+          <div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="40">0</span>%</div>
+          <div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Faster Load Times</div>
+        </div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover">
+          <div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="98">0</span>%</div>
+          <div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Client Satisfaction</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 7. TECHNOLOGY STACK ═══ -->
+  <section id="stack" class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="mb-20 text-center relative z-10">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Technology</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Our weapon of choice.</h2>
+      <p class="text-white/60 font-light text-lg">Best-in-class tools, assembled for maximum output.</p>
+    </div>
+    <div class="grid grid-cols-3 md:grid-cols-5 gap-4">
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🌐</span>
+        <div class="font-semibold text-sm text-white mb-1">HTML</div>
+        <div class="stack-desc text-white/40 text-xs font-light">Semantic, accessible markup</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🎨</span>
+        <div class="font-semibold text-sm text-white mb-1">CSS</div>
+        <div class="stack-desc text-white/40 text-xs font-light">Tailwind, GSAP animations</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">⚡</span>
+        <div class="font-semibold text-sm text-white mb-1">JavaScript</div>
+        <div class="stack-desc text-white/40 text-xs font-light">React, Next.js, Vanilla JS</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🟢</span>
+        <div class="font-semibold text-sm text-white mb-1">Node.js</div>
+        <div class="stack-desc text-white/40 text-xs font-light">REST APIs, serverless</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🔥</span>
+        <div class="font-semibold text-sm text-white mb-1">Firebase</div>
+        <div class="stack-desc text-white/40 text-xs font-light">Real-time, auth, storage</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🐘</span>
+        <div class="font-semibold text-sm text-white mb-1">Supabase</div>
+        <div class="stack-desc text-white/40 text-xs font-light">Open-source Firebase alt</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🎯</span>
+        <div class="font-semibold text-sm text-white mb-1">Figma</div>
+        <div class="stack-desc text-white/40 text-xs font-light">UI/UX design & prototyping</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🤖</span>
+        <div class="font-semibold text-sm text-white mb-1">AI / LLM</div>
+        <div class="stack-desc text-white/40 text-xs font-light">OpenAI, Claude, Gemini</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">☁️</span>
+        <div class="font-semibold text-sm text-white mb-1">Cloudflare</div>
+        <div class="stack-desc text-white/40 text-xs font-light">CDN, edge, DDoS protection</div>
+      </div>
+      <div class="stack-item glass rounded-[20px] p-6 flex flex-col items-center text-center group cursor-pointer hover:bg-white/8 transition-colors">
+        <span class="text-2xl mb-3">🔗</span>
+        <div class="font-semibold text-sm text-white mb-1">Stripe</div>
+        <div class="stack-desc text-white/40 text-xs font-light">Payments & subscriptions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 8. INDUSTRIES ═══ -->
+  <section class="py-32 px-4 border-b border-white/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-20 text-center">
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Industries we serve.</h2>
+        <p class="text-white/60 font-light text-lg">Deep domain experience across the sectors that matter most.</p>
+      </div>
+      <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">health_and_safety</span><div class="text-sm font-medium text-white/70">Healthcare</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">school</span><div class="text-sm font-medium text-white/70">Education</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">restaurant</span><div class="text-sm font-medium text-white/70">Restaurants</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">rocket_launch</span><div class="text-sm font-medium text-white/70">Startups</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">home</span><div class="text-sm font-medium text-white/70">Real Estate</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">shopping_bag</span><div class="text-sm font-medium text-white/70">E-commerce</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">memory</span><div class="text-sm font-medium text-white/70">AI / SaaS</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">account_balance</span><div class="text-sm font-medium text-white/70">Finance</div></div>
+        <div class="glass rounded-[20px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-white/30 text-2xl mb-2 block group-hover:text-white/60 transition-colors">portfolio</span><div class="text-sm font-medium text-white/70">Portfolio</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 9. STANDARDS ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Our standards.</h2>
+      <p class="text-white/60 font-light text-lg">Every project ships meeting these non-negotiable benchmarks.</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">accessibility</span>
+        <h3 class="font-semibold text-white mb-2">Accessibility</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">WCAG 2.1 compliant. Every project is accessible to every user.</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">speed</span>
+        <h3 class="font-semibold text-white mb-2">Performance</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">PageSpeed 90+. Core Web Vitals pass. Sub-2s load times.</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">security</span>
+        <h3 class="font-semibold text-white mb-2">Security</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">SSL, CSRF protection, input sanitization, dependency audits.</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">travel_explore</span>
+        <h3 class="font-semibold text-white mb-2">SEO Ready</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">Semantic HTML, structured data, Open Graph, sitemap — baked in.</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">expand</span>
+        <h3 class="font-semibold text-white mb-2">Scalability</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">Architecture that grows from 10 users to 10 million without rebuilding.</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 anim-border">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block">build</span>
+        <h3 class="font-semibold text-white mb-2">Maintainable</h3>
+        <p class="text-white/50 font-light text-sm leading-relaxed">Clean, documented code your team can own without us.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 10. TESTIMONIALS ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Clients say it best.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass rounded-[28px] p-10 glow-hover">
+        <div class="flex gap-1 mb-6">⭐⭐⭐⭐⭐</div>
+        <p class="text-white/70 font-light leading-relaxed mb-8">"Limux delivered our entire platform in 3 weeks. The quality was above anything we'd seen from agencies 3x their size. The attention to detail is extraordinary."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">AS</div>
+          <div><div class="font-semibold text-sm text-white">Alex S.</div><div class="text-white/40 text-xs">CTO, Nexus Labs</div></div>
+        </div>
+      </div>
+      <div class="glass rounded-[28px] p-10 glow-hover">
+        <div class="flex gap-1 mb-6">⭐⭐⭐⭐⭐</div>
+        <p class="text-white/70 font-light leading-relaxed mb-8">"Our old site had a 6-second load time. After Limux rebuilt it, we're at 1.2 seconds. Traffic went up 180% in the first month. The ROI was immediate."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">MK</div>
+          <div><div class="font-semibold text-sm text-white">Maria K.</div><div class="text-white/40 text-xs">Founder, Aether Store</div></div>
+        </div>
+      </div>
+      <div class="glass rounded-[28px] p-10 glow-hover">
+        <div class="flex gap-1 mb-6">⭐⭐⭐⭐⭐</div>
+        <p class="text-white/70 font-light leading-relaxed mb-8">"What sets Limux apart is the communication. Weekly updates, no surprises, and they actually pushed back when I had a bad idea. That's a partner, not just a vendor."</p>
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">JP</div>
+          <div><div class="font-semibold text-sm text-white">James P.</div><div class="text-white/40 text-xs">Head of Product, Omni</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 11. FAQ ═══ -->
+  <section id="faq" class="py-32 px-4 max-w-4xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="mb-20 text-center relative z-10">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Common questions.</h2>
+    </div>
+    <div class="space-y-3" id="faq-container">
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">How long does a typical project take?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">Most web projects take 3–6 weeks from kickoff to launch. Complex web apps or mobile projects can take 8–12 weeks. We always give you a precise timeline at the start of the project.</p>
+        </div>
+      </div>
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">Who owns the code after delivery?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">You own 100% of the code, design assets, and intellectual property upon final payment. No licensing fees, no lock-in, no strings attached. We deliver a full Git repository handoff.</p>
+        </div>
+      </div>
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">How are payments structured?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">We use a simple 50/50 split: 50% upfront to begin work, 50% on delivery. For larger projects, we can structure milestone-based payments. We accept bank transfer, Stripe, and crypto.</p>
+        </div>
+      </div>
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">Do you handle SEO and hosting?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">Every project includes an SEO foundation — semantic markup, meta tags, Open Graph, sitemap, and robots.txt. For hosting, we recommend and can set up Vercel, Cloudflare, or your preferred provider. Ongoing hosting management is available as an add-on.</p>
+        </div>
+      </div>
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">What if I need changes after launch?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">Every project includes 30 days of free post-launch support for bug fixes. For ongoing changes and feature development, we offer retainer packages starting from 10 hours/month.</p>
+        </div>
+      </div>
+      <div class="faq-item glass rounded-[20px] overflow-hidden">
+        <button class="faq-trigger w-full flex justify-between items-center p-8 text-left">
+          <span class="font-semibold text-white">Do you work with clients internationally?</span>
+          <span class="material-symbols-outlined text-white/40 faq-chevron shrink-0">expand_more</span>
+        </button>
+        <div class="faq-body px-8 pb-8">
+          <p class="text-white/60 font-light leading-relaxed">Absolutely. We work with clients across 42+ countries entirely remotely. All communication happens through async tools (Notion, Linear, Loom) plus weekly video calls. Timezone has never been a blocker.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 12. PRICING PREVIEW ═══ -->
+  <section class="py-32 px-4 max-w-5xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="mb-20 text-center relative z-10">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Transparent pricing.</h2>
+      <p class="text-white/60 font-light text-lg">No hourly rates, no hidden surprises. Flat-rate projects only.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="glass rounded-[32px] p-10 anim-border flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Starter</div>
+          <div class="text-4xl font-bold text-white mb-2">From $1.5k</div>
+          <p class="text-white/50 font-light text-sm mb-8 leading-relaxed">For landing pages, portfolio sites, and small business websites.</p>
+          <ul class="space-y-3 text-sm text-white/60 font-light">
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>1–5 pages</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>Mobile responsive</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>SEO foundation</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>2-week delivery</li>
+          </ul>
+        </div>
+        <a href="contact.html" class="mt-8 block text-center border border-white/20 rounded-full py-3 text-sm font-semibold hover:bg-white/5 transition-colors">Book Consultation</a>
+      </div>
+      <div class="glass rounded-[32px] p-10 border-white/20 flex flex-col justify-between relative overflow-hidden">
+        <div class="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-white/60 uppercase tracking-widest">Popular</div>
+        <div>
+          <div class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Business</div>
+          <div class="text-4xl font-bold text-white mb-2">From $4k</div>
+          <p class="text-white/50 font-light text-sm mb-8 leading-relaxed">For web applications, e-commerce platforms, and complex sites with CMS.</p>
+          <ul class="space-y-3 text-sm text-white/60 font-light">
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>Unlimited pages</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>CMS / Admin panel</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>API integrations</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>3–5 week delivery</li>
+          </ul>
+        </div>
+        <a href="contact.html" class="mt-8 block text-center bg-white text-black rounded-full py-3 text-sm font-bold hover:scale-105 transition-transform">Book Consultation</a>
+      </div>
+      <div class="glass rounded-[32px] p-10 anim-border flex flex-col justify-between">
+        <div>
+          <div class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4">Enterprise</div>
+          <div class="text-4xl font-bold text-white mb-2">Custom</div>
+          <p class="text-white/50 font-light text-sm mb-8 leading-relaxed">For large-scale platforms, AI products, and full digital ecosystem builds.</p>
+          <ul class="space-y-3 text-sm text-white/60 font-light">
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>Full product builds</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>AI integration</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>Dedicated team</li>
+            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-xs text-white/40">check</span>Ongoing retainer</li>
+          </ul>
+        </div>
+        <a href="contact.html" class="mt-8 block text-center border border-white/20 rounded-full py-3 text-sm font-semibold hover:bg-white/5 transition-colors">Talk to Us</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 13. FINAL CTA ═══ -->
+  <section id="cta" class="py-40 px-4 text-center relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 text-glow">Let's build something<br/>extraordinary.</h2>
+      <p class="text-xl text-white/50 font-light mb-16 max-w-2xl mx-auto">Every great product starts with a conversation. Tell us what you're building and we'll tell you how we can help.</p>
+      <div class="flex flex-col sm:flex-row gap-6 justify-center">
+        <button class="magnetic bg-white text-black px-12 py-6 rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_60px_rgba(255,255,255,0.2)]">Book Discovery Call</button>
+        <a href="contact.html" class="magnetic glass px-12 py-6 rounded-full font-semibold text-lg text-white hover:bg-white/10 transition-colors">Start Your Project</a>
+      </div>
+      <p class="text-white/30 text-sm mt-8 font-light">Usually responds within 4 hours · Free consultation · No commitment</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 pt-24 pb-12 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-20">
+    <div class="col-span-2">
+      <a href="index.html" class="font-bold tracking-tight text-white text-4xl mb-6 block">LIMUX</a>
+      <p class="text-white/40 font-light text-sm max-w-xs mb-10 leading-relaxed">An ecosystem designed for the next generation of engineers, designers, and creators. We build what lasts.</p>
+      <div class="flex gap-2">
+        <a href="contact.html" class="glass px-4 py-2 rounded-full text-sm text-white/60 hover:text-white transition-colors">Get in Touch</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Product</h4>
+      <ul class="space-y-4"><li><a href="agency.html" class="text-sm text-white/60 hover:text-white transition-colors">Agency</a></li><li><a href="academy.html" class="text-sm text-white/60 hover:text-white transition-colors">Academy</a></li><li><a href="labs.html" class="text-sm text-white/60 hover:text-white transition-colors">Labs</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li></ul>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Company</h4>
+      <ul class="space-y-4"><li><a href="index.html" class="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a></li><li><a href="careers.html" class="text-sm text-white/60 hover:text-white transition-colors">Careers</a></li><li><a href="portfolio.html" class="text-sm text-white/60 hover:text-white transition-colors">Projects</a></li></ul>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Connect</h4>
+      <ul class="space-y-4"><li><a href="contact.html" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li><li><a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Privacy</a></li></ul>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+    <p class="text-sm text-white/20 font-light">Built with precision. Shipped with care.</p>
+  </div>
+</footer>
+
+<script>
+  // ══ FAQ Accordion ══
+  document.querySelectorAll('.faq-trigger').forEach(trigger => {
+    trigger.addEventListener('click', () => {
+      const item = trigger.closest('.faq-item');
+      const body = item.querySelector('.faq-body');
+      const chevron = trigger.querySelector('.faq-chevron');
+      const isOpen = body.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-body').forEach(b => b.classList.remove('open'));
+      document.querySelectorAll('.faq-chevron').forEach(c => c.classList.remove('open'));
+      if (!isOpen) {
+        body.classList.add('open');
+        chevron.classList.add('open');
+      }
+    });
+  });
+
+  // ══ Counter Animation ══
+  const counters = document.querySelectorAll('.counter');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.getAttribute('data-target'));
+        const duration = 1800;
+        const start = performance.now();
+        const animate = (now) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(ease * target);
+          if (progress < 1) requestAnimationFrame(animate);
+          else el.textContent = target;
+        };
+        requestAnimationFrame(animate);
+        counterObserver.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => counterObserver.observe(c));
+
+  // ══ Text Reveal ══
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.transitionDelay = `${i * 100}ms`;
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal-line').forEach(el => revealObserver.observe(el));
+
+  // ══ Inside Project Reveal ══
+  const checkObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.check-item').forEach(item => item.classList.add('visible'));
+      }
+    });
+  }, { threshold: 0.2 });
+  const insideProject = document.getElementById('inside-project');
+  if (insideProject) checkObserver.observe(insideProject);
+
+  // ══ Progress Nav Dots ══
+  const sections = ['hero', 'capabilities', 'process', 'results', 'stack', 'faq', 'cta'];
+  const dots = document.querySelectorAll('.progress-dot');
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      const target = dot.getAttribute('data-target');
+      document.getElementById(target)?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  const progressObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = sections.indexOf(entry.target.id);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+    });
+  }, { threshold: 0.4 });
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) progressObserver.observe(el);
+  });
+</script>
+</body>
+</html>

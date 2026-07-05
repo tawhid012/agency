@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LIMUX Labs | Future Experiments</title>
+<meta name="description" content="Limux Labs is our R&D and innovation wing. We prototype tomorrow's tools today."/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="theme.js"></script>
+<link rel="stylesheet" href="theme.css"/>
+<script src="shaders.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: 'Inter', sans-serif; background: #000 !important; color: white; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .noise-bg { position: fixed; top:0; left:0; width:100vw; height:100vh; pointer-events:none; z-index:9999; opacity:0.03; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+  .text-glow { text-shadow: 0 0 60px rgba(255,255,255,0.25); }
+  .section-shader { position: absolute; inset: 0; pointer-events: none; z-index: 0; opacity: 0.24; }
+  .section-shader canvas { display: block; width: 100%; height: 100%; }
+  .anim-border { position: relative; }
+  .anim-border::before { content:''; position:absolute; inset:-1px; border-radius:inherit; padding:1px; background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.3),transparent 70%); -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0); -webkit-mask-composite:xor; mask-composite:exclude; opacity:0; transition:opacity 0.4s ease; }
+  .anim-border:hover::before { opacity:1; }
+  .glow-hover:hover { box-shadow: 0 0 40px rgba(255,255,255,0.08); }
+
+  /* Floating particles */
+  #particles { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1; }
+
+  /* Reveal */
+  .reveal { opacity:0; transform:translateY(24px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* Terminal */
+  .terminal { background: rgba(10,10,10,0.9); border: 1px solid rgba(255,255,255,0.08); }
+  .terminal-line { opacity: 0; transform: translateX(-8px); }
+  .terminal-line.typed { opacity: 1; transform: translateX(0); transition: opacity 0.3s ease, transform 0.3s ease; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .cursor-blink { animation: blink 1s step-end infinite; }
+
+  /* Progress bar fill */
+  .progress-fill { transition: width 1.5s cubic-bezier(0.4,0,0.2,1); }
+
+  /* Pipeline dots */
+  .pipeline-dot { transition: all 0.3s ease; }
+  .pipeline-dot.active { background: white; box-shadow: 0 0 20px rgba(255,255,255,0.6); }
+
+  /* Horizontal scroll */
+  .horizontal-scroll { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 16px; }
+  .horizontal-scroll::-webkit-scrollbar { display: none; }
+  .horizontal-scroll > * { scroll-snap-align: start; flex-shrink: 0; }
+
+  /* Aurora */
+  .aurora { position: absolute; top: -50%; left: -20%; width: 140%; height: 200%; background: conic-gradient(from 180deg at 50% 50%, rgba(139,92,246,0.08) 0deg, transparent 60deg, rgba(59,130,246,0.06) 120deg, transparent 180deg, rgba(34,211,238,0.05) 240deg, transparent 300deg, rgba(139,92,246,0.08) 360deg); animation: aurora-spin 25s linear infinite; pointer-events: none; }
+  @keyframes aurora-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+</style>
+</head>
+<body class="selection:bg-white/30 overflow-x-hidden">
+<div class="noise-bg"></div>
+<canvas id="particles"></canvas>
+
+<!-- Floating Pill Nav -->
+<div class="fixed top-6 w-full z-50 flex justify-center px-4 pointer-events-none">
+  <header class="glass pointer-events-auto rounded-[50px] px-8 py-4 flex justify-between items-center w-full max-w-5xl shadow-2xl">
+    <a href="index.html" class="font-bold tracking-tight text-white text-xl">LIMUX</a>
+    <nav class="hidden md:flex gap-8 items-center">
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="index.html">Ecosystem</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="agency.html">Services</a>
+      <a class="text-sm font-medium text-white/60 hover:text-white transition-colors" href="portfolio.html">Projects</a>
+      <a class="text-sm font-medium text-white transition-colors border-b border-white pb-0.5" href="labs.html">Vision</a>
+    </nav>
+    <button class="bg-white text-black px-6 py-2 rounded-full text-sm font-semibold hover:scale-105 transition-transform">Become a Builder</button>
+  </header>
+</div>
+
+<main>
+
+  <!-- ═══ 1. HERO ═══ -->
+  <section class="relative min-h-screen flex flex-col items-center justify-center pt-36 pb-24 px-4 text-center overflow-hidden border-b border-white/10">
+    <div class="absolute inset-0 opacity-50 pointer-events-none">
+      <canvas data-shader="grid" class="block w-full h-full"></canvas>
+    </div>
+    <div class="aurora"></div>
+    <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-white/5 blur-[150px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="relative z-10 max-w-5xl">
+      <div class="inline-flex items-center gap-2 glass rounded-full px-4 py-2 mb-10">
+        <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+        <span class="text-xs font-medium text-white/60 tracking-wide mono">4 active experiments · 15 in research</span>
+      </div>
+      <h1 class="text-6xl md:text-[96px] font-bold text-white tracking-tighter mb-6 leading-[1.02] text-glow reveal">
+        Where the future<br/>is prototyped.
+      </h1>
+      <p class="text-xl md:text-2xl text-white/50 max-w-2xl mx-auto mb-12 leading-relaxed font-light reveal">
+        Limux Labs is our R&D division. We run experiments, build prototypes, and turn bold hypotheses into products that ship.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center reveal">
+        <button class="bg-white text-black px-10 py-5 rounded-full font-semibold text-lg hover:scale-105 transition-transform shadow-[0_0_40px_rgba(255,255,255,0.2)]">Explore Experiments</button>
+        <button class="glass px-10 py-5 rounded-full font-medium text-white hover:bg-white/10 transition-colors text-lg">Submit an Idea</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 2. FEATURED EXPERIMENT ═══ -->
+  <section class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="grid"></canvas></div>
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="glass rounded-[40px] p-12 md:p-16 relative overflow-hidden anim-border">
+        <div class="absolute top-0 right-0 w-[300px] h-[300px] bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
+        <div class="relative z-10">
+          <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-6 block">Featured Experiment</span>
+          <h2 class="text-5xl md:text-7xl font-bold tracking-tighter text-white mb-4">LIMUX AI</h2>
+          <p class="text-xl text-white/50 font-light mb-12 max-w-xl leading-relaxed">Your AI development partner built for creators, developers, and businesses. Trained on the full Limux ecosystem.</p>
+          <div class="grid grid-cols-3 gap-8 mb-12 max-w-lg">
+            <div>
+              <div class="text-xs text-white/40 uppercase tracking-widest mb-2 font-semibold">Status</div>
+              <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span><span class="font-semibold text-white">Alpha</span></div>
+            </div>
+            <div>
+              <div class="text-xs text-white/40 uppercase tracking-widest mb-2 font-semibold">Launch</div>
+              <div class="font-semibold text-white">Q4 2026</div>
+            </div>
+            <div>
+              <div class="text-xs text-white/40 uppercase tracking-widest mb-2 font-semibold">Progress</div>
+              <div class="font-semibold text-white">82%</div>
+            </div>
+          </div>
+          <div class="w-full max-w-lg bg-white/10 rounded-full h-2 mb-12 overflow-hidden">
+            <div class="progress-fill h-full bg-white rounded-full" data-width="82" style="width:0%"></div>
+          </div>
+          <button class="glass px-8 py-4 rounded-full font-semibold hover:bg-white/10 transition-colors">Explore LIMUX AI →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 3. INNOVATION PRINCIPLES ═══ -->
+  <section class="py-40 px-4 border-b border-white/5 overflow-hidden relative">
+    <div class="section-shader"><canvas data-shader="ripple"></canvas></div>
+    <div class="max-w-5xl mx-auto relative z-10">
+      <div class="space-y-4">
+        <p class="text-4xl md:text-6xl font-bold tracking-tight text-white/15 reveal">We don't build for today.</p>
+        <p class="text-4xl md:text-6xl font-bold tracking-tight text-white/25 reveal">We prototype tomorrow.</p>
+        <p class="text-4xl md:text-6xl font-bold tracking-tight text-white/40 reveal">We fail fast.</p>
+        <p class="text-4xl md:text-6xl font-bold tracking-tight text-white/60 reveal">We learn faster.</p>
+        <p class="text-4xl md:text-6xl font-bold tracking-tight text-white text-glow reveal">We ship what matters.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 4. TERMINAL ═══ -->
+  <section class="py-32 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="max-w-3xl mx-auto relative z-10">
+      <div class="terminal rounded-[24px] overflow-hidden shadow-2xl">
+        <div class="flex items-center gap-2 px-6 py-4 border-b border-white/5">
+          <div class="w-3 h-3 rounded-full bg-white/20"></div>
+          <div class="w-3 h-3 rounded-full bg-white/20"></div>
+          <div class="w-3 h-3 rounded-full bg-white/20"></div>
+          <span class="ml-4 text-xs text-white/30 mono">limux-labs — zsh</span>
+        </div>
+        <div class="p-8 mono text-sm leading-loose" id="terminal-output">
+          <div class="terminal-line"><span class="text-green-400">➜</span> <span class="text-white/60">limux labs</span> <span class="text-white">status --all</span></div>
+          <div class="terminal-line mt-4"><span class="text-white/30">Loading experiments...</span></div>
+          <div class="terminal-line mt-6 text-white/50">EXPERIMENT              STATUS         PROGRESS</div>
+          <div class="terminal-line text-white/10">─────────────────────────────────────────────────</div>
+          <div class="terminal-line"><span class="text-white">Limux AI</span>              <span class="text-green-400">● ALPHA</span>         <span class="text-white/60">██████████░  82%</span></div>
+          <div class="terminal-line"><span class="text-white">Visual Builder</span>         <span class="text-amber-400">● TESTING</span>       <span class="text-white/60">████████░░░  60%</span></div>
+          <div class="terminal-line"><span class="text-white">Limux CMS</span>             <span class="text-blue-400">● DEV</span>           <span class="text-white/60">█████░░░░░░  42%</span></div>
+          <div class="terminal-line"><span class="text-white">Developer OS</span>          <span class="text-purple-400">● RESEARCH</span>     <span class="text-white/60">██░░░░░░░░░  25%</span></div>
+          <div class="terminal-line"><span class="text-white">Limux Studio</span>          <span class="text-purple-400">● PROTOTYPE</span>    <span class="text-white/60">███░░░░░░░░  18%</span></div>
+          <div class="terminal-line mt-4 text-white/30">5 experiments · 3 active · 2 in research</div>
+          <div class="terminal-line mt-2"><span class="text-green-400">➜</span> <span class="cursor-blink text-white">▌</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 5. INNOVATION PIPELINE ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Innovation Pipeline</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">From spark to ship.</h2>
+    </div>
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot w-5 h-5 rounded-full bg-white/20 border border-white/30"></div>
+        <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mt-2">Idea</div>
+        <div class="text-[10px] text-white/20 mono mt-1">200+</div>
+      </div>
+      <div class="hidden md:block w-full h-px bg-gradient-to-r from-white/10 via-white/20 to-white/10 flex-1"></div>
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot w-5 h-5 rounded-full bg-white/20 border border-white/30"></div>
+        <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mt-2">Research</div>
+        <div class="text-[10px] text-white/20 mono mt-1">15</div>
+      </div>
+      <div class="hidden md:block w-full h-px bg-gradient-to-r from-white/10 via-white/20 to-white/10 flex-1"></div>
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot w-5 h-5 rounded-full bg-white/30 border border-white/40"></div>
+        <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mt-2">Prototype</div>
+        <div class="text-[10px] text-white/20 mono mt-1">5</div>
+      </div>
+      <div class="hidden md:block w-full h-px bg-gradient-to-r from-white/10 via-white/20 to-white/10 flex-1"></div>
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot active w-5 h-5 rounded-full"></div>
+        <div class="text-xs text-white/60 uppercase tracking-widest font-semibold mt-2">Alpha</div>
+        <div class="text-[10px] text-white/30 mono mt-1">3</div>
+      </div>
+      <div class="hidden md:block w-full h-px bg-gradient-to-r from-white/10 via-white/20 to-white/10 flex-1"></div>
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot w-5 h-5 rounded-full bg-white/20 border border-white/30"></div>
+        <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mt-2">Beta</div>
+        <div class="text-[10px] text-white/20 mono mt-1">1</div>
+      </div>
+      <div class="hidden md:block w-full h-px bg-gradient-to-r from-white/10 via-white/20 to-white/10 flex-1"></div>
+      <div class="flex flex-col items-center gap-2 flex-1">
+        <div class="pipeline-dot w-5 h-5 rounded-full bg-white/10 border border-white/20"></div>
+        <div class="text-xs text-white/40 uppercase tracking-widest font-semibold mt-2">Public</div>
+        <div class="text-[10px] text-white/20 mono mt-1">0</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 6. EXPERIMENTS ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5 relative overflow-hidden">
+    <div class="section-shader"><canvas data-shader="aurora"></canvas></div>
+    <div class="mb-20 relative z-10">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Active Experiments</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">Running in the lab.</h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Limux AI -->
+      <div class="glass rounded-[32px] p-10 anim-border group glow-hover transition-all">
+        <div class="flex justify-between items-start mb-6">
+          <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs font-semibold tracking-widest uppercase">Alpha</span>
+          <span class="text-xs text-white/30 mono">Q4 2026</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Limux AI</h3>
+        <p class="text-white/50 font-light leading-relaxed mb-6">An intelligent assistant trained on the full Limux knowledge base. Answering builder questions in real-time.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">GPT-4</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">Claude</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">RAG</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">Supabase</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mb-4 overflow-hidden"><div class="progress-fill h-full bg-green-400/60 rounded-full" data-width="82" style="width:0%"></div></div>
+        <div class="flex justify-between items-center"><span class="text-xs text-white/30 mono">82% complete</span><span class="text-xs text-white/30">Team: 3</span></div>
+      </div>
+      <!-- Visual Builder -->
+      <div class="glass rounded-[32px] p-10 anim-border group glow-hover transition-all">
+        <div class="flex justify-between items-start mb-6">
+          <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-400 text-xs font-semibold tracking-widest uppercase">Testing</span>
+          <span class="text-xs text-white/30 mono">Q1 2027</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Visual Builder</h3>
+        <p class="text-white/50 font-light leading-relaxed mb-6">A zero-code, component-first visual editor for building production-ready UIs without writing a line of code.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">React</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">Canvas</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">WebGL</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mb-4 overflow-hidden"><div class="progress-fill h-full bg-amber-400/60 rounded-full" data-width="60" style="width:0%"></div></div>
+        <div class="flex justify-between items-center"><span class="text-xs text-white/30 mono">60% complete</span><span class="text-xs text-white/30">Team: 2</span></div>
+      </div>
+      <!-- Limux CMS -->
+      <div class="glass rounded-[32px] p-10 anim-border group glow-hover transition-all">
+        <div class="flex justify-between items-start mb-6">
+          <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-widest uppercase">Development</span>
+          <span class="text-xs text-white/30 mono">Q2 2027</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Limux CMS</h3>
+        <p class="text-white/50 font-light leading-relaxed mb-6">A headless content management system designed for speed, flexibility, and developer experience.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">Node.js</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">PostgreSQL</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">GraphQL</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mb-4 overflow-hidden"><div class="progress-fill h-full bg-blue-400/60 rounded-full" data-width="42" style="width:0%"></div></div>
+        <div class="flex justify-between items-center"><span class="text-xs text-white/30 mono">42% complete</span><span class="text-xs text-white/30">Team: 2</span></div>
+      </div>
+      <!-- Developer OS -->
+      <div class="glass rounded-[32px] p-10 anim-border group glow-hover transition-all">
+        <div class="flex justify-between items-start mb-6">
+          <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 text-xs font-semibold tracking-widest uppercase">Research</span>
+          <span class="text-xs text-white/30 mono">2028</span>
+        </div>
+        <h3 class="text-2xl font-semibold text-white mb-3">Limux OS</h3>
+        <p class="text-white/50 font-light leading-relaxed mb-6">A lightweight, web-native operating environment for distributed developer teams.</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">Rust</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">WebGPU</span>
+          <span class="text-[10px] text-white/30 px-2 py-0.5 rounded-full bg-white/5 mono">WASM</span>
+        </div>
+        <div class="w-full bg-white/10 rounded-full h-1.5 mb-4 overflow-hidden"><div class="progress-fill h-full bg-purple-400/60 rounded-full" data-width="25" style="width:0%"></div></div>
+        <div class="flex justify-between items-center"><span class="text-xs text-white/30 mono">25% complete</span><span class="text-xs text-white/30">Team: 1</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 7. FUTURE PRODUCTS (Horizontal Scroll) ═══ -->
+  <section class="py-32 px-4 border-b border-white/5">
+    <div class="max-w-7xl mx-auto mb-12">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Future Products</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white">What's next.</h2>
+    </div>
+    <div class="horizontal-scroll max-w-7xl mx-auto">
+      <div class="glass rounded-[28px] p-10 w-[340px] anim-border flex flex-col justify-between min-h-[260px]">
+        <div><span class="text-xs text-green-400 font-semibold tracking-widest uppercase mb-4 block">Coming 2026</span><h3 class="text-2xl font-semibold text-white mb-2">Limux AI</h3><p class="text-white/40 font-light text-sm">AI development partner for creators and builders.</p></div>
+        <div class="mt-6 w-full bg-white/10 rounded-full h-1"><div class="h-full bg-green-400/50 rounded-full" style="width:82%"></div></div>
+      </div>
+      <div class="glass rounded-[28px] p-10 w-[340px] anim-border flex flex-col justify-between min-h-[260px]">
+        <div><span class="text-xs text-amber-400 font-semibold tracking-widest uppercase mb-4 block">Testing</span><h3 class="text-2xl font-semibold text-white mb-2">Visual Builder</h3><p class="text-white/40 font-light text-sm">Zero-code visual editor for production UIs.</p></div>
+        <div class="mt-6 w-full bg-white/10 rounded-full h-1"><div class="h-full bg-amber-400/50 rounded-full" style="width:60%"></div></div>
+      </div>
+      <div class="glass rounded-[28px] p-10 w-[340px] anim-border flex flex-col justify-between min-h-[260px]">
+        <div><span class="text-xs text-blue-400 font-semibold tracking-widest uppercase mb-4 block">Development</span><h3 class="text-2xl font-semibold text-white mb-2">Limux CMS</h3><p class="text-white/40 font-light text-sm">Headless CMS for speed-obsessed developers.</p></div>
+        <div class="mt-6 w-full bg-white/10 rounded-full h-1"><div class="h-full bg-blue-400/50 rounded-full" style="width:42%"></div></div>
+      </div>
+      <div class="glass rounded-[28px] p-10 w-[340px] anim-border flex flex-col justify-between min-h-[260px]">
+        <div><span class="text-xs text-purple-400 font-semibold tracking-widest uppercase mb-4 block">Prototype</span><h3 class="text-2xl font-semibold text-white mb-2">Limux Studio</h3><p class="text-white/40 font-light text-sm">Integrated design + development workspace.</p></div>
+        <div class="mt-6 w-full bg-white/10 rounded-full h-1"><div class="h-full bg-purple-400/50 rounded-full" style="width:18%"></div></div>
+      </div>
+      <div class="glass rounded-[28px] p-10 w-[340px] anim-border flex flex-col justify-between min-h-[260px]">
+        <div><span class="text-xs text-purple-400/50 font-semibold tracking-widest uppercase mb-4 block">Concept</span><h3 class="text-2xl font-semibold text-white mb-2">Limux OS</h3><p class="text-white/40 font-light text-sm">Web-native operating environment for teams.</p></div>
+        <div class="mt-6 w-full bg-white/10 rounded-full h-1"><div class="h-full bg-purple-400/30 rounded-full" style="width:10%"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 8. RESEARCH CATEGORIES ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Research domains.</h2>
+      <p class="text-white/60 font-light text-lg">The frontiers we are actively exploring.</p>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">psychology</span><div class="text-sm font-medium text-white/70">Artificial Intelligence</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">code</span><div class="text-sm font-medium text-white/70">Developer Tools</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">settings_suggest</span><div class="text-sm font-medium text-white/70">Automation</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">school</span><div class="text-sm font-medium text-white/70">Education</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">security</span><div class="text-sm font-medium text-white/70">Cybersecurity</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">data_object</span><div class="text-sm font-medium text-white/70">Open Source</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">cloud</span><div class="text-sm font-medium text-white/70">Cloud</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">touch_app</span><div class="text-sm font-medium text-white/70">Future Interfaces</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">3d_rotation</span><div class="text-sm font-medium text-white/70">WebGL / 3D</div></div>
+      <div class="glass rounded-[20px] p-6 text-center hover:bg-white/8 transition-colors cursor-pointer group"><span class="material-symbols-outlined text-2xl text-white/30 mb-3 block group-hover:text-white/60 transition-colors">view_in_ar</span><div class="text-sm font-medium text-white/70">XR / AR / VR</div></div>
+    </div>
+  </section>
+
+  <!-- ═══ 9. TECHNOLOGY WE EXPLORE ═══ -->
+  <section class="py-32 px-4 max-w-7xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Tech we explore.</h2>
+    </div>
+    <div class="grid grid-cols-4 md:grid-cols-6 gap-4">
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🤖</span><div class="text-xs font-medium text-white/50 mono">GPT</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🧠</span><div class="text-xs font-medium text-white/50 mono">Claude</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">💎</span><div class="text-xs font-medium text-white/50 mono">Gemini</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🎮</span><div class="text-xs font-medium text-white/50 mono">WebGPU</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🌐</span><div class="text-xs font-medium text-white/50 mono">Three.js</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🦀</span><div class="text-xs font-medium text-white/50 mono">Rust</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🐍</span><div class="text-xs font-medium text-white/50 mono">Python</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🧬</span><div class="text-xs font-medium text-white/50 mono">TensorFlow</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🐘</span><div class="text-xs font-medium text-white/50 mono">Supabase</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🔥</span><div class="text-xs font-medium text-white/50 mono">Firebase</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">🐳</span><div class="text-xs font-medium text-white/50 mono">Docker</div></div>
+      <div class="glass rounded-[16px] p-5 text-center hover:bg-white/8 transition-colors cursor-pointer"><span class="text-xl mb-2 block">☁️</span><div class="text-xs font-medium text-white/50 mono">Cloudflare</div></div>
+    </div>
+  </section>
+
+  <!-- ═══ 10. INNOVATION STATS ═══ -->
+  <section class="py-32 px-4 border-b border-white/5">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="glass rounded-[32px] p-10 text-center glow-hover"><div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="25">0</span></div><div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Experiments</div></div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover"><div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="15">0</span></div><div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Active Research</div></div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover"><div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="4">0</span></div><div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Products</div></div>
+        <div class="glass rounded-[32px] p-10 text-center glow-hover"><div class="text-5xl font-bold text-white mb-3"><span class="counter" data-target="200">0</span>+</div><div class="text-white/40 text-sm uppercase tracking-widest font-semibold">Ideas Submitted</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 11. EXPERIMENTAL POLICIES ═══ -->
+  <section class="py-40 px-4 border-b border-white/5">
+    <div class="max-w-4xl mx-auto text-center space-y-6">
+      <p class="text-3xl md:text-5xl font-bold tracking-tight text-white/30 reveal">Some experiments fail.</p>
+      <p class="text-3xl md:text-5xl font-bold tracking-tight text-white/40 reveal">Some evolve.</p>
+      <p class="text-3xl md:text-5xl font-bold tracking-tight text-white/60 reveal">Some become products.</p>
+      <p class="text-3xl md:text-5xl font-bold tracking-tight text-white text-glow reveal">Everything teaches us something.</p>
+    </div>
+  </section>
+
+  <!-- ═══ 12. COMMUNITY EXPERIMENTS ═══ -->
+  <section class="py-32 px-4 max-w-5xl mx-auto border-b border-white/5">
+    <div class="text-center mb-20">
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/40 mb-4 block">Community Innovation</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">Build with us.</h2>
+      <p class="text-white/60 font-light text-lg max-w-xl mx-auto">Limux Labs isn't just our lab. It's yours. Submit ideas, join betas, contribute to open source.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div class="glass rounded-[28px] p-8 text-center glow-hover group cursor-pointer">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block group-hover:text-white/60 transition-colors">lightbulb</span>
+        <div class="font-semibold text-white mb-2 text-sm">Submit an Idea</div>
+        <p class="text-white/40 text-xs font-light">Share your concept with the lab</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 text-center glow-hover group cursor-pointer">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block group-hover:text-white/60 transition-colors">thumb_up</span>
+        <div class="font-semibold text-white mb-2 text-sm">Vote</div>
+        <p class="text-white/40 text-xs font-light">Help us prioritize what to build</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 text-center glow-hover group cursor-pointer">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block group-hover:text-white/60 transition-colors">science</span>
+        <div class="font-semibold text-white mb-2 text-sm">Join Beta</div>
+        <p class="text-white/40 text-xs font-light">Test experiments early</p>
+      </div>
+      <div class="glass rounded-[28px] p-8 text-center glow-hover group cursor-pointer">
+        <span class="material-symbols-outlined text-3xl text-white/30 mb-4 block group-hover:text-white/60 transition-colors">handshake</span>
+        <div class="font-semibold text-white mb-2 text-sm">Contribute</div>
+        <p class="text-white/40 text-xs font-light">Build together in the open</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 13. FUTURE VISION ═══ -->
+  <section class="py-40 px-4 border-b border-white/5 relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-white/3 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="max-w-5xl mx-auto text-center relative z-10">
+      <span class="text-xs text-white/30 uppercase tracking-widest font-semibold mb-8 block mono">2030</span>
+      <h2 class="text-5xl md:text-8xl font-bold tracking-tighter text-white leading-[1.1] text-glow">
+        Every creator<br/>should have access<br/>to world-class tools.
+      </h2>
+    </div>
+  </section>
+
+  <!-- ═══ 14. ROADMAP ═══ -->
+  <section class="py-32 px-4 max-w-4xl mx-auto border-b border-white/5">
+    <div class="mb-20 text-center">
+      <h2 class="text-4xl font-bold tracking-tight text-white mb-4">The Limux Roadmap</h2>
+    </div>
+    <div class="space-y-0">
+      <div class="flex gap-8 items-start">
+        <div class="flex flex-col items-center"><div class="w-4 h-4 rounded-full bg-white mt-1 shrink-0 shadow-[0_0_12px_rgba(255,255,255,0.5)]"></div><div class="w-px h-16 bg-white/20 my-2"></div></div>
+        <div class="pb-12"><div class="text-xs text-white/40 uppercase tracking-widest mb-1 font-semibold mono">2025</div><h3 class="text-xl font-semibold text-white mb-1">Launch</h3><p class="text-white/50 font-light">Agency operations, first client projects, community formation.</p></div>
+      </div>
+      <div class="flex gap-8 items-start">
+        <div class="flex flex-col items-center"><div class="w-4 h-4 rounded-full bg-white/80 mt-1 shrink-0 border border-white/40 shadow-[0_0_8px_rgba(255,255,255,0.3)]"></div><div class="w-px h-16 bg-white/20 my-2"></div></div>
+        <div class="pb-12"><div class="text-xs text-white/40 uppercase tracking-widest mb-1 font-semibold mono">2026</div><h3 class="text-xl font-semibold text-white mb-1">Academy + AI</h3><p class="text-white/50 font-light">Learning paths, certifications, and Limux AI alpha launch.</p></div>
+      </div>
+      <div class="flex gap-8 items-start">
+        <div class="flex flex-col items-center"><div class="w-4 h-4 rounded-full bg-white/40 mt-1 shrink-0 border border-white/20"></div><div class="w-px h-16 bg-white/20 my-2"></div></div>
+        <div class="pb-12"><div class="text-xs text-white/40 uppercase tracking-widest mb-1 font-semibold mono">2027</div><h3 class="text-xl font-semibold text-white mb-1">Products</h3><p class="text-white/50 font-light">Limux AI, Visual Builder, and CMS reach production release.</p></div>
+      </div>
+      <div class="flex gap-8 items-start">
+        <div class="flex flex-col items-center"><div class="w-4 h-4 rounded-full bg-white/20 mt-1 shrink-0 border border-white/10"></div></div>
+        <div><div class="text-xs text-white/40 uppercase tracking-widest mb-1 font-semibold mono">2028+</div><h3 class="text-xl font-semibold text-white mb-1">Global</h3><p class="text-white/50 font-light">Scaling the ecosystem to serve builders in every time zone.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 15. LAB NOTES NEWSLETTER ═══ -->
+  <section class="py-32 px-4 border-b border-white/5">
+    <div class="max-w-2xl mx-auto text-center">
+      <span class="text-5xl mb-6 block">🧪</span>
+      <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">The Lab Notes</h2>
+      <p class="text-white/50 font-light text-lg mb-12">Monthly updates on research, experiments, and launches. No spam. Pure signal.</p>
+      <div class="flex gap-3 max-w-md mx-auto">
+        <input type="email" placeholder="you@email.com" class="flex-1 glass rounded-full px-6 py-4 text-sm text-white placeholder:text-white/30 outline-none border border-white/10 focus:border-white/30 bg-transparent transition-colors"/>
+        <button class="bg-white text-black px-8 py-4 rounded-full font-semibold text-sm hover:scale-105 transition-transform shrink-0">Subscribe</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 16. FINAL CTA ═══ -->
+  <section class="py-40 px-4 text-center relative overflow-hidden">
+    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full -z-10 pointer-events-none"></div>
+    <div class="max-w-4xl mx-auto relative z-10">
+      <h2 class="text-5xl md:text-7xl font-bold text-white tracking-tight mb-8 text-glow">Every product starts<br/>as a crazy idea.</h2>
+      <p class="text-xl text-white/50 font-light mb-16 max-w-2xl mx-auto">Got one? We want to hear it. Submit your experiment proposal and let's build it together.</p>
+      <div class="flex flex-col sm:flex-row gap-6 justify-center">
+        <button class="bg-white text-black px-12 py-6 rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-[0_0_60px_rgba(255,255,255,0.2)]">Submit an Experiment</button>
+        <a href="contact.html" class="glass px-12 py-6 rounded-full font-semibold text-lg text-white hover:bg-white/10 transition-colors">Talk to Us</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="border-t border-white/10 pt-24 pb-12 px-4 bg-[#050505]">
+  <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-5 gap-x-10 gap-y-16 mb-20">
+    <div class="col-span-2">
+      <a href="index.html" class="font-bold tracking-tight text-white text-4xl mb-6 block">LIMUX</a>
+      <p class="text-white/40 font-light text-sm max-w-xs mb-10 leading-relaxed">An ecosystem designed for the next generation of engineers, designers, and creators.</p>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Product</h4>
+      <ul class="space-y-4"><li><a href="agency.html" class="text-sm text-white/60 hover:text-white transition-colors">Agency</a></li><li><a href="academy.html" class="text-sm text-white/60 hover:text-white transition-colors">Academy</a></li><li><a href="labs.html" class="text-sm text-white/60 hover:text-white transition-colors">Labs</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li></ul>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Company</h4>
+      <ul class="space-y-4"><li><a href="index.html" class="text-sm text-white/60 hover:text-white transition-colors">Ecosystem</a></li><li><a href="careers.html" class="text-sm text-white/60 hover:text-white transition-colors">Careers</a></li><li><a href="portfolio.html" class="text-sm text-white/60 hover:text-white transition-colors">Projects</a></li></ul>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-6 uppercase tracking-wider text-xs">Connect</h4>
+      <ul class="space-y-4"><li><a href="contact.html" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a></li><li><a href="community.html" class="text-sm text-white/60 hover:text-white transition-colors">Community</a></li><li><a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Privacy</a></li></ul>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p class="text-sm text-white/30 font-light">© 2026 Limux Ecosystem. All rights reserved.</p>
+    <p class="text-sm text-white/20 font-light">Built with precision. Shipped with care.</p>
+  </div>
+</footer>
+
+<script>
+  // ══ Floating Particles ══
+  (function() {
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    for (let i = 0; i < 60; i++) {
+      particles.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, r: Math.random()*1.5+0.5, dx: (Math.random()-0.5)*0.3, dy: (Math.random()-0.5)*0.3, o: Math.random()*0.3+0.05 });
+    }
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      particles.forEach(p => {
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle = `rgba(255,255,255,${p.o})`; ctx.fill();
+        p.x += p.dx; p.y += p.dy;
+        if (p.x<0||p.x>canvas.width) p.dx*=-1;
+        if (p.y<0||p.y>canvas.height) p.dy*=-1;
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  })();
+
+  // ══ Reveal on Scroll ══
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        entry.target.style.transitionDelay = `${i * 80}ms`;
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  // ══ Counter Animation ══
+  const counters = document.querySelectorAll('.counter');
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const target = parseInt(el.dataset.target);
+        const duration = 1800;
+        const start = performance.now();
+        const animate = (now) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          el.textContent = Math.floor(ease * target);
+          if (progress < 1) requestAnimationFrame(animate);
+          else el.textContent = target;
+        };
+        requestAnimationFrame(animate);
+        counterObs.unobserve(el);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => counterObs.observe(c));
+
+  // ══ Progress Bar Animation ══
+  const progressObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const bar = entry.target;
+        bar.style.width = bar.dataset.width + '%';
+        progressObs.unobserve(bar);
+      }
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.progress-fill').forEach(b => progressObs.observe(b));
+
+  // ══ Terminal Typing ══
+  const termObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const lines = entry.target.querySelectorAll('.terminal-line');
+        lines.forEach((line, i) => {
+          setTimeout(() => line.classList.add('typed'), i * 200);
+        });
+        termObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  const terminalOutput = document.getElementById('terminal-output');
+  if (terminalOutput) termObs.observe(terminalOutput);
+</script>
+</body>
+</html>
