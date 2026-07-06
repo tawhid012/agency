@@ -11,7 +11,7 @@
   const presets = {
     orb: {
       fragment: `
-        precision highp float;
+        precision mediump float;
         varying vec2 v_uv;
         uniform float u_time;
         uniform vec2 u_resolution;
@@ -30,7 +30,7 @@
     },
     aurora: {
       fragment: `
-        precision highp float;
+        precision mediump float;
         varying vec2 v_uv;
         uniform float u_time;
         void main() {
@@ -46,7 +46,7 @@
     },
     ripple: {
       fragment: `
-        precision highp float;
+        precision mediump float;
         varying vec2 v_uv;
         uniform float u_time;
         uniform vec2 u_resolution;
@@ -65,7 +65,7 @@
     },
     grid: {
       fragment: `
-        precision highp float;
+        precision mediump float;
         varying vec2 v_uv;
         uniform float u_time;
         void main() {
@@ -81,6 +81,9 @@
     }
   };
 
+  // Cap DPR at 2 for performance on high-DPI mobile screens
+  const MAX_DPR = 2;
+
   function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
@@ -89,8 +92,8 @@
   }
 
   function initShaderCanvas(canvas, presetName) {
-    const gl = canvas.getContext('webgl');
-    if (!gl) return;
+    const gl = canvas.getContext('webgl', { alpha: false, antialias: false, powerPreference: 'low-power' });
+    if (!gl) return null;
 
     const preset = presets[presetName] || presets.orb;
     const program = gl.createProgram();
@@ -115,7 +118,7 @@
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
       const width = Math.max(1, Math.floor(rect.width * dpr));
       const height = Math.max(1, Math.floor(rect.height * dpr));
       if (canvas.width !== width || canvas.height !== height) {
@@ -126,24 +129,68 @@
     }
 
     resize();
-    window.addEventListener('resize', resize);
+
+    let rafId = null;
+    let resizeHandler = () => resize();
+    window.addEventListener('resize', resizeHandler);
 
     function render(time) {
       resize();
       if (uTime) gl.uniform1f(uTime, time * 0.001);
       if (uResolution) gl.uniform2f(uResolution, canvas.width, canvas.height);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      requestAnimationFrame(render);
+      rafId = requestAnimationFrame(render);
     }
 
-    render(0);
+    // Return control object for pause/resume
+    return {
+      start() {
+        if (!rafId) {
+          rafId = requestAnimationFrame(render);
+        }
+      },
+      stop() {
+        if (rafId) {
+          cancelAnimationFrame(rafId);
+          rafId = null;
+        }
+      },
+      destroy() {
+        this.stop();
+        window.removeEventListener('resize', resizeHandler);
+      }
+    };
   }
 
   function init() {
-    document.querySelectorAll('canvas[data-shader]').forEach((canvas) => {
-      const presetName = canvas.getAttribute('data-shader') || 'orb';
-      initShaderCanvas(canvas, presetName);
-    });
+    const canvases = document.querySelectorAll('canvas[data-shader]');
+    
+    // Use IntersectionObserver for lazy init — only run shaders when visible
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const canvas = entry.target;
+          if (entry.isIntersecting) {
+            if (!canvas._shaderCtrl) {
+              const presetName = canvas.getAttribute('data-shader') || 'orb';
+              canvas._shaderCtrl = initShaderCanvas(canvas, presetName);
+            }
+            if (canvas._shaderCtrl) canvas._shaderCtrl.start();
+          } else {
+            if (canvas._shaderCtrl) canvas._shaderCtrl.stop();
+          }
+        });
+      }, { rootMargin: '100px' });
+
+      canvases.forEach((canvas) => observer.observe(canvas));
+    } else {
+      // Fallback: init all immediately
+      canvases.forEach((canvas) => {
+        const presetName = canvas.getAttribute('data-shader') || 'orb';
+        const ctrl = initShaderCanvas(canvas, presetName);
+        if (ctrl) ctrl.start();
+      });
+    }
   }
 
   if (document.readyState === 'loading') {
